@@ -1,6 +1,7 @@
 #include "Burer.hh"
 #include "BurerGlobal.hh"
 #include "BurerRandom.hh"
+// #include "BurerSolution.hh" //included in Burer.hh
 
 #include <math.h>
 #include <string.h>
@@ -215,7 +216,9 @@ Burer2002Solution::Burer2002Solution(
   std::vector<std::pair<double, int> > angles;
   for (int ct=0; ct < N_; ++ct) {
     (*theta)[ct] -= 2 * M_PI * floor((*theta)[ct] / (2*M_PI));
-    angles.push_back(std::pair<double, int>((*theta)[ct], ct)); //Q: Do we want to pushback every time? Vector as fixed length N_
+    angles.push_back(std::pair<double, int>((*theta)[ct], ct)); //Q: Do we want to pushback every time? Vector has fixed length N_
+    //OPt. would be to init size N angles vector 
+    //then no new memory will need to be allocated
   }
   angles.push_back(std::pair<double, int>(2*M_PI, N_)); //Theta_n+1 from paper
   std::sort(angles.begin(), angles.end()); //sorts by first entry (of pair) by default
@@ -234,7 +237,7 @@ Burer2002Solution::Burer2002Solution(
 
   // Now, first_it points at the beginning, and second_it points at the first
   // node with theta > pi.
-  // Correspondence to papaer:
+  // Correspondence to paper:
   // i is first_it and j is second_it
 
   // Fill in diff_weights_ and weight_ from assignments_, and copy them over to
@@ -245,11 +248,16 @@ Burer2002Solution::Burer2002Solution(
   std::vector<int> curr_assignments(assignments_);
   std::vector<double> curr_diff_weights(diff_weights_);
   
+  //Q: How does this work? update_index == N_ must somehow correspond to alpha > pi
+  //But why 
+
   // Compute the optimal cut by exhaustively searching through the possible cuts
   while (1) {
     // Update the cut angle
     int update_index;
-    if (first_it->first <= second_it->first - M_PI) {
+    //note: first_it->first corresponds to \theta_i in paper
+    //second_it->first corresponds to \theta_j in paper
+    if (first_it->first <= second_it->first - M_PI) { 
       update_index = first_it->second;  // We will exclude this guy.
       ++first_it;
     } else {
@@ -289,7 +297,7 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w)
 
   // Parameters
   // New: Number of outer iterations
-  const int M = 1;
+  const int M = 1; //used to be 1
   // Number of permitted non-improving perturbations to optimal theta before
   // search is stopped. This was set to a few different values in the
   // computational results of burer2002 (0, 4, and 8 for torus set; 0 and 10
@@ -310,6 +318,7 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w)
 
   for (int e(0) ; e < G_m ; ++e)
   {
+      //Note: Factor 2 comes form Weight matrix being symmetric
       w1norm += 2.0 * fabs(G_weight[e]); // Count both directions of edge
   }
 
@@ -317,7 +326,7 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w)
     // Generate random starting set of angles
     std::vector<double> theta(G_n);
     for (int ct=0; ct < G_n; ++ct) {
-      theta[ct] = Random::RandDouble() * 2 * M_PI;
+      theta[ct] = Random::RandDouble() * 2 * M_PI; //RHS is double in [0,2PI)
     }
 
     // Algorithm 1 from Section 4

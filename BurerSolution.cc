@@ -301,8 +301,9 @@ void MaxCutSolution::UpdateCutValues(int update_index, std::vector<int>* x,
 				     std::vector<double>* diff_weights,
 				     double *objective) const {
   *objective += (*diff_weights)[update_index];
-  (*x)[update_index] = -(*x)[update_index];
-  (*diff_weights)[update_index] = -(*diff_weights)[update_index];
+  (*x)[update_index] = -(*x)[update_index]; //node ass. to update_index changes ass. set
+  (*diff_weights)[update_index] = -(*diff_weights)[update_index]; //Here the sign can be flipped as every summands sign is flipped
+  // Note: The difference to the for loop below, where only some summands signs are flipped
 
   // Iterate the set of all neighbors for node update_index
 #ifdef false
@@ -323,15 +324,23 @@ void MaxCutSolution::UpdateCutValues(int update_index, std::vector<int>* x,
      int i = G_first[e];
      int j = G_second[e];
 
+     //gamma changes only around the neighbors of the node update_index
+     //This decreases the number of computations
      if (i == update_index)
      {
-         (*diff_weights)[j] += 2.0 * (*x)[update_index] * (*x)[j] * G_weight[e];
+          //wij = G_weight[e]
+          // Notice: dist(wij,-wij) = 2wij, therefore jumping from wij to -w_ij
+          // value 2wij
+          //This can not be implemented by flipping the sign as we have a sum and want to flip the sign of one summand at a time
+          //If update_index and j in the same set ((*x)[update_index] * (*x)[j]=1 ) and switching the assignment set of update_index
+          // would increase add wij to the cut
+         (*diff_weights)[j] += 2.0 * (*x)[update_index] * (*x)[j] * G_weight[e]; 
      }
      else if (j == update_index)
      {
          (*diff_weights)[i] += 2.0 * (*x)[update_index] * (*x)[i] * G_weight[e];
      }
-   }
+  }
 }
 
 
@@ -410,7 +419,7 @@ MaxCutSolution::MaxCutSolution(const MaxCutSolution &x) :
 
 void MaxCutSolution::PopulateFromAssignments() {
   weight_ = 0.0;
-  diff_weights_.assign(N_, 0.0);
+  diff_weights_.assign(N_, 0.0); //Note: assigns all entries 0.0
 
   for (int e(0) ; e < G_m ; ++e)
   {
