@@ -3,8 +3,6 @@
 
 #include <vector>
 
-namespace Burer
-{
 
   class Solution {
   public:
@@ -43,8 +41,18 @@ namespace Burer
     const std::vector<int>& get_assignments() const {  return assignments_; }
     const std::vector<double>& get_diff_weights() const {  return diff_weights_; }
 
+    //Testing by adding {}
     // Assignment operator
-    Solution& operator=(const Solution &rhs);
+    Solution& operator=(const Solution &rhs){
+      assignments_ = rhs.assignments_;
+      // Objective value
+      weight_ = rhs.weight_;
+      // The number of nodes in the graph / variables in the problem
+      N_ = rhs.N_;
+
+      diff_weights_ = rhs.diff_weights_;
+      return *this;
+    }
 
     // Copy constructor
     Solution(const Solution& x);
@@ -107,5 +115,4 @@ class Burer2002{
   Burer2002(int n, int m, int * f, int * s, double * w);
 };
 
-}
 #endif

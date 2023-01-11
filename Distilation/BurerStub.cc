@@ -13,7 +13,6 @@
 
 //We need to decide on a datastructure for the graph. We would like to implement adjacency lists, to decrease the runtime of UpdateCutValues(..)
 
-using namespace Burer;
 
     //Definiton of the Global Vars which were in BurerGlobal.hh are now in the block below
   
@@ -590,7 +589,7 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w)
 
   // Parameters
   // New: Number of outer iterations
-  const int M = 1; //used to be 1
+  const int M = 100; //used to be 1
   // Number of permitted non-improving perturbations to optimal theta before
   // search is stopped. This was set to a few different values in the
   // computational results of burer2002 (0, 4, and 8 for torus set; 0 and 10
@@ -615,10 +614,16 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w)
       w1norm += 2.0 * fabs(G_weight[e]); // Count both directions of edge
   }
 
+  //Note unnecessary runtime
+  std::vector<double> theta(G_n);
+  for (int ct=0; ct < G_n; ++ct) {
+  theta[ct] = (((double)rand()) / (((long)RAND_MAX)+1)) * 2 * M_PI; //RHS is double in [0,2PI)
+  }
+  Solution heur_sol = Solution::Rank2Cut(w1norm, &theta, G_n);
 
   for (int iter=0; iter < M ; ++iter) {  // Random restart until termination criterion
     // Generate random starting set of angles
-    std::vector<double> theta(G_n);
+    // std::vector<double> theta(G_n);
     for (int ct=0; ct < G_n; ++ct) {
       theta[ct] = (((double)rand()) / (((long)RAND_MAX)+1)) * 2 * M_PI; //RHS is double in [0,2PI)
     }
@@ -632,7 +637,6 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w)
       // best cut associated with this theta.
       
       Solution x = Solution::Rank2Cut(w1norm, &theta, G_n);
-      //TODO: work from here
 
       // Perform local searches (all 1- and 2-moves better than the tolerance)
       if (local_search) {
@@ -652,11 +656,15 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w)
       if (Solution::ImprovesOver(x.get_weight(),best_weight)) {
 	best_weight = x.get_weight();
 	k = 0;
+        //If solution higher weight than all previous solutions then assigns as new candidate
+        if(Solution::ImprovesOver(x.get_weight(),heur_sol.get_weight()) ){
+          heur_sol = x;
+        }
       } else {
 	++k;
       }
 
-      printf("%d:%d: Got solution of weight %lf\n", iter, k, x.get_weight());
+      // printf("%d:%d: Got solution of weight %lf\n", iter, k, x.get_weight()); 
 
       // Perturb the angles associated with the current solution
       for (int ct=0; ct < G_n; ++ct) {
@@ -666,6 +674,7 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w)
     }
   }
 
+  printf("heur_sol of weight %lf\n", heur_sol.get_weight()); 
   // delete[] G_first;
   // delete[] G_second;
   // delete[] G_weight;
