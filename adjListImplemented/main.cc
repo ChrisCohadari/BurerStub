@@ -7,6 +7,7 @@
 #include <common/lesspain.hh>
 #include "BurerStub.hh"
 // #include "BurerGlobal.hh"
+#include <assert.h>
 
 #include <iostream>
 void print_usage()
@@ -17,9 +18,6 @@ void print_usage()
 //Implemntation of adjacency list avoiding a graph class
 void create_adjList(int G_n, int G_m, int * G_first, int * G_second, std::vector<int> &adjList, std::vector<int> &offset, std::vector<int> &edgeCorrForAdjList){
 
-  // std::vector<int> adjList(2*G_m, -1);
-  // std::vector<int> offset(G_n, 0);
-
   //acc to .mc doc every edge is listed once, thus i think that this counts correctly
   //count occurences
   for(int i = 0; i < G_m; i++){
@@ -27,26 +25,10 @@ void create_adjList(int G_n, int G_m, int * G_first, int * G_second, std::vector
     offset[G_second[i]]++;
   }
 
-  // std::cout << "offset\n";
-  // for(int i =0; i < offset.size(); i++)
-  //   std::cout << offset[i] << " ";
-  // std::cout << "\n";
-
-
-  //an implementation without cumCounts would be nice
-  // for(int i = 1; i < G_n; i++)
-  //   offset[i] += offset[i-1];
-
   //cummulative counts
   std::vector<int> cumCounts(G_n, offset[0]);
-  // cumCounts[0] = offset[0];
   for(int i = 1 ; i< G_n; i++)
     cumCounts[i] = offset[i] + cumCounts[i-1];
-
-  // std::cout << "cumCounts\n";
-  // for(int i =0; i < cumCounts.size(); i++)
-  //   std::cout << cumCounts[i] << " ";
-  // std::cout << "\n";
 
   for(int i = 0; i<G_n; i++)
     offset[i] = cumCounts[i] - offset[i];
@@ -69,14 +51,29 @@ void create_adjList(int G_n, int G_m, int * G_first, int * G_second, std::vector
   //Note that now the i-th entry of indexvector contains the startindex of the neighbours of vertex i+1
   //the number of neighbours of vertex 
   for(int i = G_n -1; i > 0; i--)
-  {
-    // std::cout << "i = " << i << "\n";
     offset[i] = offset[i-1];
-  }
   offset[0] = 0;
-  // offset[G_n] = G_n;//debugging
+  offset[G_n] = 2*G_m;
 }
 
+bool is_adjList(int G_n, int G_m, int * G_first, int * G_second, std::vector<int> &adjList, std::vector<int> &offset, std::vector<int> &edgeCorrForAdjList){
+    int v = 0; 
+    int e = 0; //e-th edge in mc file
+    for(int i =0; i < 2*G_m; i++){
+        //v is the vertex whose neighbour is entry adjList[i]
+        //While loop to correctly handle isolated vertices (they have no entries in adjList and satisfy offset[v] =offset[v+1] )
+        //compute max{v | i < offset[v+1]}
+        while(i>=offset[v+1])
+            v++;
+
+        e = edgeCorrForAdjList[i];
+
+        //check if edge correctly encoded, note both possible as being a neighbour relation is symmetric
+        if( !((G_first[e] == v && G_second[e] == adjList[i] ) || (G_first[e] == adjList[i] && G_second[e] == v)))
+            return false;
+    }
+    return true;
+}
 
 int main(int argc, char *argv[])
 {
@@ -127,8 +124,9 @@ int main(int argc, char *argv[])
         std::vector<int> offset(n+1,0);
         std::vector<int> edgeCorrForAdjList(2*m,-1);
         
-        // create_adjList(n,m,frst,scnd, adjList, offset, edgeCorrForAdjList);
+        create_adjList(n,m,frst,scnd, adjList, offset, edgeCorrForAdjList);
 
+        assert(is_adjList(n,m, frst, scnd, adjList, offset, edgeCorrForAdjList) == true || fprintf(stderr, "Adjacency list incorrectly build for instance: %s\n", filename));
 
         if (ok)
         {

@@ -7,23 +7,17 @@
 
 #include "BurerStub.hh"
 
-//There are quite a few dependencies on global variables/ protected variables from parent classes
-//I guess we have the opportunity to choose our own data structure.. So we need to decide what we want to keep around what we want to get rid of.
-//Our datastructe needs double weight_ (aka \gamma (assignments_)) std::vector<double> diff_weights_
 
-//We need to decide on a datastructure for the graph. We would like to implement adjacency lists, to decrease the runtime of UpdateCutValues(..)
+//Definiton of the Global Vars which were in BurerGlobal.hh are now in the block below
 
-
-    //Definiton of the Global Vars which were in BurerGlobal.hh are now in the block below
-  
-    int G_n;
-    int G_m;
-    std::vector<int> G_first;
-    std::vector<int> G_second;
-    std::vector<double> G_weight;
-    std::vector<int> adjList;
-    std::vector<int> offset;
-    std::vector<int> edgeCorrForAdjList;
+int G_n;
+int G_m;
+std::vector<int> G_first;
+std::vector<int> G_second;
+std::vector<double> G_weight;
+std::vector<int> adjList;
+std::vector<int> offset;
+std::vector<int> edgeCorrForAdjList;
 
 //Beginning of functions concerning BurerStub.hh
 Solution::Solution(int N, int init_assignment) :
@@ -253,33 +247,33 @@ void Solution::UpdateCutValues(int update_index, std::vector<int>* x,
 
 // This is the only loop that gets ``inefficient'' because we do not have
 // adjacency lists in this implementation
-  for (int e(0) ; e < G_m ; ++e)
-  {
-     int i = G_first[e];
-     int j = G_second[e];
-
-     //gamma changes only around the neighbors of the node update_index
-     //This decreases the number of computations
-     if (i == update_index)
-     {
-          //The factor 2 flips the sign of the summand
-         (*diff_weights)[j] += 2.0 * (*x)[update_index] * (*x)[j] * G_weight[e]; 
-     }
-     else if (j == update_index)
-     {
-         (*diff_weights)[i] += 2.0 * (*x)[update_index] * (*x)[i] * G_weight[e];
-     }
-  }
-  // for (int i = offset[update_index]  ; i < offset[update_index +1] ; i++)
+  // for (int e(0) ; e < G_m ; ++e)
   // {
-  //   //j corresponds to the "i-th" neighbour of update_index 
-  //    int j = adjList[i];
+  //    int i = G_first[e];
+  //    int j = G_second[e];
   //
   //    //gamma changes only around the neighbors of the node update_index
   //    //This decreases the number of computations
+  //    if (i == update_index)
+  //    {
   //         //The factor 2 flips the sign of the summand
-  //    (*diff_weights)[j] += 2.0 * (*x)[update_index] * (*x)[j] * G_weight[edgeCorrForAdjList[i]]; 
+  //        (*diff_weights)[j] += 2.0 * (*x)[update_index] * (*x)[j] * G_weight[e]; 
+  //    }
+  //    else if (j == update_index)
+  //    {
+  //        (*diff_weights)[i] += 2.0 * (*x)[update_index] * (*x)[i] * G_weight[e];
+  //    }
   // }
+  for (int i = offset[update_index]  ; i < offset[update_index +1] ; i++)
+  {
+    //j corresponds to the "i-th" neighbour of update_index 
+    int j = adjList[i];
+
+    //gamma changes only around the neighbors of the node update_index
+    //This decreases the number of computations
+    //The factor 2 flips the sign of the summand
+    (*diff_weights)[j] += 2.0 * (*x)[update_index] * (*x)[j] * G_weight[edgeCorrForAdjList[i]]; 
+  }
 }
 
 
@@ -638,6 +632,7 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
   }
 
   srand(time(NULL)); //setting seed to investigate different results
+
   //Note unnecessary runtime
   std::vector<double> theta(G_n);
   for (int ct=0; ct < G_n; ++ct) {
@@ -697,7 +692,7 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
       }
     }
   FILE *fp;
-  fp = fopen("logWeights_Distilation.txt", "a");
+  fp = fopen("logWeights_adjList.txt", "a");
   fprintf(fp, "%f\n", best_weight);
   fclose(fp);
   }

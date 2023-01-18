@@ -10,7 +10,7 @@
 std::pair<std::vector<int>, std::vector<int>> create_adjList(int G_n, int G_m, int* G_first, int* G_second){
 
   std::vector<int> adjList(2*G_m, -1);
-  std::vector<int> offset(G_n, 0);
+  std::vector<int> offset(G_n+1, 0);
 
   //acc to .mc doc every edge is listed once, thus i think that this counts correctly
   //count occurences
@@ -56,22 +56,23 @@ std::pair<std::vector<int>, std::vector<int>> create_adjList(int G_n, int G_m, i
     offset[G_second[i]]++;
   }
 
-  for(int i = 0; i<G_n; i++)
-    std::cout << offset[i] << " ";
-  std::cout << "\n";
+  // for(int i = 0; i<G_n; i++)
+  //   std::cout << offset[i] << " ";
+  // std::cout << "\n";
+
   //Note that now the i-th entry of indexvector contains the startindex of the neighbours of vertex i+1
   //the number of neighbours of vertex 
   for(int i = G_n -1; i > 0; i--)
   {
-    // std::cout << "i = " << i << "\n";
     offset[i] = offset[i-1];
   }
   offset[0] = 0;
+  offset[G_n] = 2*G_m;
 
-  for(int i = 0; i<G_n; i++)
+  for(int i = 0; i<=G_n; i++)
     std::cout << offset[i] << " ";
   std::cout << "\n";
-  std::cout << "G_m" << G_m << "endl";
+  std::cout << "G_m" << G_m << "\n";
 
   return std::pair<std::vector<int>,std::vector<int>>(adjList,offset);
 }
