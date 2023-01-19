@@ -164,7 +164,7 @@ Solution::Solution(double w1norm, std::vector<double>* theta, int G_n, std::vect
   // Determine initial set inclusion, and setup variables to be updated
   // later.
   for (int ct=0; ct < N_; ++ct) {
-    assignments_[ct] = -1; //Seg fault happens here
+    assignments_[ct] = -1; 
   }
   std::vector<std::pair<double, int> >::iterator first_it = angles.begin();
   std::vector<std::pair<double, int> >::iterator second_it =  angles.begin();
@@ -577,36 +577,27 @@ double Solution::LoadNewTheta(const std::vector<double>& theta,
 //   return assignments_;
 // }
 
-Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int> &adjListInput, std::vector<int> &offsetInput, std::vector<int> &edgeCorrForAdjListInput)
+Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int> &adjList, std::vector<int> &offset, std::vector<int> &edgeCorrForAdjList)
 {
     // GLobal Vars in BurerGlobal (!)
 
     G_n = n;
     G_m = m;
-    // G_first = new int[m];
-    // G_second = new int[m];
-    // G_weight = new double[m];
 
     for (int i = 0 ; i < m ; ++i)
     {
-	// G_first[i] = f[i];
-	// G_second[i]= s[i];
-	// G_weight[i] = w[i];
       G_first.push_back(f[i]);
       G_second.push_back(s[i]);
       G_weight.push_back(w[i]);
-      // adjList.push_back(adjList[i]);
-      // offset.push_back(offset[i]);
-      // edgeCorrForAdjList.push_back(edgeCorrForAdjList[i]);
     }
 
     //debugging
-    adjList = adjListInput;
-    offset = offsetInput;
-    edgeCorrForAdjList = edgeCorrForAdjListInput;
+    adjList = adjList;
+    offset = offset;
+    edgeCorrForAdjList = edgeCorrForAdjList;
   // Parameters
   // New: Number of outer iterations
-  const int M = 1; //used to be 1
+  const int M = 3; //used to be 1
   // Number of permitted non-improving perturbations to optimal theta before
   // search is stopped. This was set to a few different values in the
   // computational results of burer2002 (0, 4, and 8 for torus set; 0 and 10
@@ -633,12 +624,11 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
 
   srand(time(NULL)); //setting seed to investigate different results
 
-  //Note unnecessary runtime
+
+  //Keep track of best solution over all outer iterations (of M)
+  Solution heur_sol(G_n, 1);
+
   std::vector<double> theta(G_n);
-  for (int ct=0; ct < G_n; ++ct) {
-  theta[ct] = (((double)rand()) / (((long)RAND_MAX)+1)) * 2 * M_PI; //RHS is double in [0,2PI)
-  }
-  Solution heur_sol = Solution::Rank2Cut(w1norm, &theta, G_n, adjList, offset, edgeCorrForAdjList);
 
   for (int iter=0; iter < M ; ++iter) {  // Random restart until termination criterion
     // Generate random starting set of angles
@@ -659,8 +649,8 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
 
       // Perform local searches (all 1- and 2-moves better than the tolerance)
       if (local_search) {
-	x.All1Swap(one_move_tolerance);
-	x.All2Swap(two_move_tolerance);
+        x.All1Swap(one_move_tolerance);
+        x.All2Swap(two_move_tolerance);
       }
 
       // The following is taken out of function: Termination only when iteration
@@ -668,36 +658,42 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
       // Check termination criterion (runtime on non-validation runs; iteration
       // count on validation runs).
       //if (!Report(x, iter)) {
-//	return;
-//      }
+      //	return;
+      //      }
       
       // Update counter keeping track of iterations without improvement
       if (Solution::ImprovesOver(x.get_weight(),best_weight)) {
-	best_weight = x.get_weight();
-	k = 0;
+        best_weight = x.get_weight();
+        k = 0;
         //If solution higher weight than all previous solutions then assigns as new candidate
-        if(Solution::ImprovesOver(x.get_weight(),heur_sol.get_weight()) ){
+        if(Solution::ImprovesOver(x.get_weight(),heur_sol.get_weight()) )
           heur_sol = x;
-        }
       } else {
-	++k;
+        ++k;
       }
 
-      // printf("%d:%d: Got solution of weight %lf\n", iter, k, x.get_weight()); 
+      printf("%d:%d: Got solution of weight %lf\n", iter, k, x.get_weight()); 
+
+      // FILE *fp;
+      // fp = fopen("output_fixed.log", "a");
+      // fprintf(fp,"%d:%d: Got solution of weight %lf\n", iter, k, x.get_weight()); 
+      // fclose(fp);
 
       // Perturb the angles associated with the current solution
       for (int ct=0; ct < G_n; ++ct) {
-	theta[ct] = M_PI / 2.0 * (1.0 - x.get_assignments()[ct]) +
-	  perturbation * (2 * M_PI * (((double)rand()) / (((long)RAND_MAX)+1)) - M_PI);
+        theta[ct] = M_PI / 2.0 * (1.0 - x.get_assignments()[ct]) +
+          perturbation * (2 * M_PI * (((double)rand()) / (((long)RAND_MAX)+1)) - M_PI);
       }
     }
-  FILE *fp;
-  fp = fopen("logWeights_adjList.txt", "a");
-  fprintf(fp, "%f\n", best_weight);
-  fclose(fp);
   }
 
-  // printf("heur_sol of weight %lf\n", heur_sol.get_weight()); 
+  printf("Heuristic solution of weight %lf\n", heur_sol.get_weight()); 
+
+  // FILE *fp;
+  // fp = fopen("output_fixed.log", "a");
+  // fprintf(fp,"Heuristic solution of weight %lf\n", heur_sol.get_weight()); 
+  // fclose(fp);
+
   // delete[] G_first;
   // delete[] G_second;
   // delete[] G_weight;

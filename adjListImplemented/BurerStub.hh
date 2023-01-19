@@ -6,16 +6,16 @@
 
   class Solution {
   public:
-    Solution(int N, int init_assignment); //USED
+    Solution(int N, int init_assignment); 
     
     // Constructor takes the assignments, weight, and problem.
-    Solution(const std::vector<int>& assignments, double weight); //USED
+    Solution(const std::vector<int>& assignments, double weight); 
 
       static Solution Rank2Cut(double w1norm, std::vector<double>* theta, int G_n, std::vector<int> &adjList, std::vector<int> &offset, std::vector<int> &edgeCorrForAdjList) {
 	return Solution(w1norm, theta, G_n, adjList, offset, edgeCorrForAdjList);
       }
 
-	  Solution(double w1norm, std::vector<double>* theta, int G_n, std::vector<int> &adjList, std::vector<int> &offset, std::vector<int> &edgeCorrForAdjList); //USED for in Algortihm1
+	  Solution(double w1norm, std::vector<double>* theta, int G_n, std::vector<int> &adjList, std::vector<int> &offset, std::vector<int> &edgeCorrForAdjList); 
 
     void UpdateCutValues(int update_index, std::vector<int>* x,
 	  			     std::vector<double>* diff_weights,
@@ -44,7 +44,6 @@
     const std::vector<int>& get_assignments() const {  return assignments_; }
     const std::vector<double>& get_diff_weights() const {  return diff_weights_; }
 
-    //Testing by adding {}
     // Assignment operator
     Solution& operator=(const Solution &rhs){
       assignments_ = rhs.assignments_;
@@ -79,7 +78,6 @@
     bool operator<=(const Solution& other) const {
 	return weight_ <= other.weight_;
     }
-    //Black box local minimisation algo from MQLIB
 
     void All1Swap(double tolerance);
     void All2Swap(double tolerance);
@@ -93,11 +91,6 @@
               std::vector<int>& G_first,
               std::vector<int>& G_second,
               std::vector<double>& G_weight);
-
-    // std::vector<double> MQLIB_m_inf(double w1norm, std::vector<double>* theta);
-
-    //Performs ProcudureCUT as in paper
-    // std::vector<int> ProcedureCUT(std::vector<double>* theta);
 
   protected:
     // Assignment of each node (-1/1 in MAXCUT, 0/1 in QUBO)
@@ -113,7 +106,7 @@
 class Burer2002{
  public:
   // Solves Max-Cut on edge-weighted graph mi, reporting each new best
-  // solution to the reporter.
+  // solution to the reporter. //Note: No reporter anymore
   //Perform algorithm 1 from paper
   Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int> &adjList, std::vector<int> &offset, std::vector<int> &edgeCorrForAdjList);
 };
