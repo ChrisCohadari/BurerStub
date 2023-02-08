@@ -597,13 +597,13 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
     edgeCorrForAdjList = edgeCorrForAdjList;
   // Parameters
   // New: Number of outer iterations
-  const int M = 3; //used to be 1
+  const int M = 1; //used to be 1
   // Number of permitted non-improving perturbations to optimal theta before
   // search is stopped. This was set to a few different values in the
   // computational results of burer2002 (0, 4, and 8 for torus set; 0 and 10
   // for G-set; and 10 and 50 for spin-glass dataset) so we'll use 50 since
   // it was the most common choice (and an intermediate value).
-  const int N = 10;
+  const int N = 1;
   // Whether we perform greedy 1- and 2-moves after 
   const int local_search = 0;
   // Amount of improvement required to do a 1-move
@@ -625,6 +625,7 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
   srand(time(NULL)); //setting seed to investigate different results
 
 
+  int it_ctr = 0; //iteration counter
   //Keep track of best solution over all outer iterations (of M)
   Solution heur_sol(G_n, 1);
 
@@ -642,6 +643,7 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
     double best_weight = -std::numeric_limits<double>::max();
     int k = 0;  // # of runs without an improvement in the best solution
     while (k <= N) {
+      it_ctr++;
       // Rank2Cut minimizes f(theta) and then uses Procedure-CUT to get the
       // best cut associated with this theta.
       
@@ -672,7 +674,7 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
         ++k;
       }
 
-      printf("%d:%d: Got solution of weight %lf\n", iter, k, x.get_weight()); 
+      // printf("%d:%d: Got solution of weight %lf\n", iter, k, x.get_weight()); 
 
       // FILE *fp;
       // fp = fopen("output_fixed.log", "a");
@@ -687,7 +689,8 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
     }
   }
 
-  printf("Heuristic solution of weight %lf\n", heur_sol.get_weight()); 
+  // printf("Heuristic solution of weight %lf\n", heur_sol.get_weight()); 
+  printf("%lf,%d\n",heur_sol.get_weight(),it_ctr);
 
   // FILE *fp;
   // fp = fopen("output_fixed.log", "a");
