@@ -603,7 +603,7 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
   // computational results of burer2002 (0, 4, and 8 for torus set; 0 and 10
   // for G-set; and 10 and 50 for spin-glass dataset) so we'll use 50 since
   // it was the most common choice (and an intermediate value).
-  const int N = 10;
+  const int N = 15;
   // Whether we perform greedy 1- and 2-moves after 
   const int local_search = 0;
   // Amount of improvement required to do a 1-move
