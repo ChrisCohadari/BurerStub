@@ -597,13 +597,13 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
     edgeCorrForAdjList = edgeCorrForAdjList;
   // Parameters
   // New: Number of outer iterations
-  const int M = 1; //used to be 1
+  const int M = 50; //used to be 1
   // Number of permitted non-improving perturbations to optimal theta before
   // search is stopped. This was set to a few different values in the
   // computational results of burer2002 (0, 4, and 8 for torus set; 0 and 10
   // for G-set; and 10 and 50 for spin-glass dataset) so we'll use 50 since
   // it was the most common choice (and an intermediate value).
-  const int N = 1;
+  const int N = 10;
   // Whether we perform greedy 1- and 2-moves after 
   const int local_search = 0;
   // Amount of improvement required to do a 1-move

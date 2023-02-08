@@ -1,7 +1,7 @@
 #!/bin/bash
 
-instance_directory=~/Documents/studies/Sorbonne/TER/BurerStub/instances/mc
+instance_directory=../instances/mc
 for entry in "${instance_directory}"/*
 do 
-  ./burer "$entry" >> log.txt
+  ./burer.M10.N10 "$entry" >> log.M10.N10.txt
 done
