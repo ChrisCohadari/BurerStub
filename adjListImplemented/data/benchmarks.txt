@@ -1,4 +1,4 @@
-instance
+instance (.mc)
 be100.10.mc
 be100.1.mc
 be100.2.mc

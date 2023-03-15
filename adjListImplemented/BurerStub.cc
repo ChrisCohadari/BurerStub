@@ -591,7 +591,6 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
       G_weight.push_back(w[i]);
     }
 
-    //debugging
     adjList = adjList;
     offset = offset;
     edgeCorrForAdjList = edgeCorrForAdjList;
@@ -622,6 +621,7 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
       w1norm += 2.0 * fabs(G_weight[e]); // Count both directions of edge
   }
 
+  //This causes different random numbers every run we  might not want this!
   srand(time(NULL)); //setting seed to investigate different results
 
 
@@ -690,7 +690,7 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
   }
 
   // printf("Heuristic solution of weight %lf\n", heur_sol.get_weight()); 
-  printf("%lf,%d\n",heur_sol.get_weight(),it_ctr);
+  printf("%lf, %d\n",heur_sol.get_weight(),it_ctr);
 
   // FILE *fp;
   // fp = fopen("output_fixed.log", "a");

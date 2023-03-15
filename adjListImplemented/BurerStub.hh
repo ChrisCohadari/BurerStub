@@ -104,7 +104,12 @@
   };
 
 class Burer2002{
- public:
+  public:
+    // Assignment of each node (-1/1 in MAXCUT, 0/1 in QUBO)
+    std::vector<int> assignments_;
+    // Objective value
+    double weight_;
+   
   // Solves Max-Cut on edge-weighted graph mi, reporting each new best
   // solution to the reporter. //Note: No reporter anymore
   //Perform algorithm 1 from paper
