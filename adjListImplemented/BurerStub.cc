@@ -690,12 +690,14 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
   }
 
   // printf("Heuristic solution of weight %lf\n", heur_sol.get_weight()); 
-  printf("%lf, %d\n",heur_sol.get_weight(),it_ctr);
+  // printf("%lf, %d\n",heur_sol.get_weight(),it_ctr);
 
-  // FILE *fp;
-  // fp = fopen("output_fixed.log", "a");
-  // fprintf(fp,"Heuristic solution of weight %lf\n", heur_sol.get_weight()); 
-  // fclose(fp);
+  // if(  heur_sol.get_weight()  -128223 > 0){
+  //   FILE *fp;
+  //   fp = fopen("vector_over_opt.log", "a");
+  //   fprintf(fp,"Heuristic solution of weight %lf\n", heur_sol.get_weight()); 
+  //   fclose(fp);
+  // }
 
   // delete[] G_first;
   // delete[] G_second;
