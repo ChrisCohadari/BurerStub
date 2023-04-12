@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
         //     accWeight += wght[i];
         // }
         // std::cout << "accumulated Weight = " << accWeight << std::endl;
-        // std::cout << (accWeight - 2*19412) +119412 <<std::endl;
+        // std::cout << (accWeight - 2*19412) +119412 <<std::endl; //SHOULDNT THAT BE 2*119412 ??
         // return 0;
 
         if (ok)

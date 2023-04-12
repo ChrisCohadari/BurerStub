@@ -19,6 +19,7 @@ std::vector<int> adjList;
 std::vector<int> offset;
 std::vector<int> edgeCorrForAdjList;
 
+Solution::Solution(const Solution& x): assignments_(x.assignments_), weight_(x.weight_), N_(x.N_) {};
 //Beginning of functions concerning BurerStub.hh
 Solution::Solution(int N, int init_assignment) :
   assignments_(N, init_assignment),
@@ -151,14 +152,14 @@ Solution::Solution(double w1norm, std::vector<double>* theta, int G_n, std::vect
   
   // Modulo the angles to be between 0 and 2*PI, and add to a vector of
   // index/angle pairs. Sort wrt angle.
-  std::vector<std::pair<double, int> > angles;
+  std::vector<std::pair<double, int> > angles(N_+1);
   for (int ct=0; ct < N_; ++ct) {
     (*theta)[ct] -= 2 * M_PI * floor((*theta)[ct] / (2*M_PI));
-    angles.push_back(std::pair<double, int>((*theta)[ct], ct)); //Q: Do we want to pushback every time? Vector has fixed length N_
+    angles[ct]=std::pair<double, int>((*theta)[ct], ct); //Q: Do we want to pushback every time? Vector has fixed length N_
     //OPt. would be to init size N angles vector 
     //then no new memory will need to be allocated
   }
-  angles.push_back(std::pair<double, int>(2*M_PI, N_)); //Theta_n+1 from paper
+  angles[N_]=std::pair<double, int>(2*M_PI, N_); //Theta_n+1 from paper
   std::sort(angles.begin(), angles.end()); //sorts by first entry (of pair) by default
 
   // Determine initial set inclusion, and setup variables to be updated
@@ -583,26 +584,30 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
 
     G_n = n;
     G_m = m;
+    G_first.resize(G_m,-1);
+    G_second.resize(G_m,-1);
+    G_weight.resize(G_m,0);
 
     for (int i = 0 ; i < m ; ++i)
     {
-      G_first.push_back(f[i]);
-      G_second.push_back(s[i]);
-      G_weight.push_back(w[i]);
+      G_first[i]=f[i];
+      G_second[i]=s[i];
+      G_weight[i]=w[i];
     }
+
 
     adjList = adjList;
     offset = offset;
     edgeCorrForAdjList = edgeCorrForAdjList;
   // Parameters
   // New: Number of outer iterations
-  const int M = 50; //used to be 1
+  const int M = 200; //used to be 1
   // Number of permitted non-improving perturbations to optimal theta before
   // search is stopped. This was set to a few different values in the
   // computational results of burer2002 (0, 4, and 8 for torus set; 0 and 10
   // for G-set; and 10 and 50 for spin-glass dataset) so we'll use 50 since
   // it was the most common choice (and an intermediate value).
-  const int N = 15;
+  const int N = 35;
   // Whether we perform greedy 1- and 2-moves after 
   const int local_search = 0;
   // Amount of improvement required to do a 1-move
@@ -617,7 +622,7 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
 
   for (int e(0) ; e < G_m ; ++e)
   {
-      //Note: Factor 2 comes form Weight matrix being symmetric
+      //Note: Factor 2 comes form Weight matrix being symmetric, by graph undirected
       w1norm += 2.0 * fabs(G_weight[e]); // Count both directions of edge
   }
 
@@ -692,12 +697,17 @@ Burer2002::Burer2002(int n, int m, int * f, int * s, double * w, std::vector<int
   // printf("Heuristic solution of weight %lf\n", heur_sol.get_weight()); 
   // printf("%lf, %d\n",heur_sol.get_weight(),it_ctr);
 
-  // if(  heur_sol.get_weight()  -128223 > 0){
-  //   FILE *fp;
-  //   fp = fopen("vector_over_opt.log", "a");
-  //   fprintf(fp,"Heuristic solution of weight %lf\n", heur_sol.get_weight()); 
-  //   fclose(fp);
-  // }
+  //delete after testing diff_weights
+  printf("%f",heur_sol.get_weight());
+
+  if(  std::abs(heur_sol.get_weight())  - 128223 > 0){
+    FILE *fp;
+    fp = fopen("../AnalysingDifferences/ass.txt", "w");
+    // fprintf(fp, "val= %f",heur_sol.get_weight());
+    for(int i = 0; i < G_n; i++)
+      fprintf(fp,"%d\n", heur_sol.get_assignments()[i]); 
+    fclose(fp);
+  }
 
   // delete[] G_first;
   // delete[] G_second;
