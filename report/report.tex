@@ -672,37 +672,37 @@ Next we want to investigate the relationship between the function $ f $ and the 
   A vector $ \theta \in \mathbb{R} ^{ n }  $ is called an angular representation of a cut, or simply a cut, if there exist integers $ k _{ ij }  $ such that $ \theta_i - \theta_j = k _{ ij }
 \pi$ for all $ i,j \in \left[ 1:n \right]  $ 
 \end{Def} 
-Using the fact that the cosine evaluates to $ \pm 1 $ for all multiples of $ \pi $, we get $ \cos( \theta_i - \theta_j ) \in \left\{ \pm 1  \right\}   $ for any cut $ \theta
-$.
-\begin{lem}
-Let $ \overline{ \theta }  $ be an angular representation of a cut. Then there exists a binary vector $ \overline{ x } \in \left\{ -1,1 \right\} ^{ n }  $  such that
+Let $ \overline{ \theta }  $ be an angular representation of a cut.
+Using that $ \cos( \overline{ \theta }  _{ i } - \overline{ \theta} _{ j }  )  $ evaluates to $ 1 $ if $ k _{ ij }  $ is even and to $ -1 $ if $ k _{ij} $ is odd,
+there exists a binary vector $ \overline{ x } \in \left\{ -1,1 \right\} ^{ n }  $  such that
 \begin{align}
 \label{eq:cutrel} 
-\cos( \overline{ \theta } _{ i } - \overline{ \theta }  _{ j } ) = \overline{ x } _{ i } \overline{ x } _{ j } = \pm 1 \quad \text{for all } i,j \in \left[ 1:n \right] 
+\cos( \overline{ \theta } _{ i } - \overline{ \theta }  _{ j } ) = \overline{ x } _{ i } \overline{ x } _{ j } = \pm 1 \quad \text{for all } i,j \in \left[ 1:n \right].
 \end{align} 
+This can be seen by setting $ x_1 = 1 $ and 
+\begin{align*}
+\overline{ x }  _{ i } = \begin{cases}
+1 & \text{if } \overline{ \theta}_i - \overline{ \theta}_1 \in 2 \pi \mathbb{Z} \\
+-1 & \text{otherwise} 
+\end{cases}
+\quad \text{for } i \in \left[ 2:n \right] 
+\end{align*} 
+This construction is correct, as for any $ i,j \in \left[ 1:n \right]  $ we have  $ k _{
+ij }  $ is even if and only if $ k _{ i1 }  $ and $ k _{ j1 } $ are both even or both odd if and only if $ \overline{ x } _i \overline{ x } _j = 1 $.
+The equivalence holds by
+\begin{align*}
+ k _{ ij } \pi = \overline{ \theta} _{ i } - \overline{ \theta} _{ j } = \overline{ \theta} _{ i } - \overline{ \theta} _{ 1 } - ( \overline{ \theta} _{ j
+} - \overline{ \theta} _{ 1 } ) = ( k _{ i1 } - k _{ j1 } ) \pi 
+\end{align*} 
 Then $ \overline{ x }  $ can be viewed as the cut corresponding to $ \overline{ \theta }  $.
 Moreover, the cut value corresponding to $ \overline{ \theta }  $ is
 \begin{align}
 \label{eq:psiRelaxedCut} 
 \psi ( \overline{ \theta } ) = \frac{ 1 }{ 2 } \sum_{ 1 \leq i < j \leq n  }^{  } w _{ ij } \left( 1 - \cos( \overline{ \theta } _{ i } - \overline{ \theta } _{ j }  )  \right) 
 \end{align} 
-\improvement{Note that this has the advantage, that we can assign a cut value to vectors $ \theta $ which do not a priori have a cut value! We make use of this and should lay
-it out}
-\end{lem} 
-\begin{proof}
-\todo[inline]{There exists a binary vector st $ \cos( \theta_i - \theta_j ) = x_i x_j $ }
-We obtain 
-$ \frac{ 1 }{ 2 } \sum_{ 1 \leq i < j \leq n  }^{  } w _{ ij } \left( 1 - \cos( \overline{ \theta } _{ i } - \overline{ \theta } _{ j }  )  \right) $
-by plugging \ref{eq:cutrel} into \ref{def:mcp}. \improvement{\ref{def:mcp} is a LP!}
-\end{proof}
-%\begin{rem}
-%Thanks to equation \ref{eq:psiRelaxedCut} we can interpret the function
-%\begin{align*}
-%\psi : \mathbb{R} ^{ n }  \to \mathbb{R}  , \ \theta \mapsto \frac{ 1 }{ 2 } \sum_{ 1 \leq i < j  \leq n   }^{  } w _{ ij } \left( 1 - \cos( \theta_i - \theta_j  )  \right) 
-%\end{align*} 
-%\end{rem} 
+In the next Proposition we give a detailed acount of this correspondence.
 \begin{prop}
-Modulo the uniform rotation and the periodicity for each variable, there is an \textcolor{red}{one-to-one} correspondence between the binary cut and the angular representation
+Modulo the uniform rotation and the periodicity for each variable, there is an one-to-one correspondence between binary cuts and angular representations
 of a cut, given by
 \begin{align}
 \label{eq:ass1to1} 
@@ -720,7 +720,6 @@ In the same manner we can set
 \end{align*} 
 \end{prop} 
 \begin{proof}
-Now for the correspondence between the binary cut and the angular represetntation of a cut: \\
 It is clear that assignment \ref{eq:ass1to1} assigns exactly one angular representation to a binary cut.
 On the other hand every angular representation of a cut has a representant, where every variable is either $ 0 $ or $ \pi $.
 Let $ \overline{ \theta}   $ be an angular representation of a cut. 
@@ -744,8 +743,10 @@ As $ \overline{ \theta }  $ is an angular representation of a cut there exists a
 $ \overline{ \theta } _{ i } - \overline{ \theta } _{ j } = k \pi   $. By rearranging the terms there exists a $ \widetilde{ k } \in \mathbb{Z} $ such that  
 $ \overline{ \theta } _{ j } = \overline{ \theta } _{ i } - k \pi = \widetilde{ k } \pi + \tau $.
 This shows equation \ref{eq:thetajtau}. 
-This shows $ \left( \overline{ \theta } - \tau e  \right) _{ i } \in \left\{ 0, \pi  \right\}  $ for all $ i \in \left[ 1:n \right]  $ and $ f ( \overline{ \theta } ) = f (
-\overline{ \theta } - \tau e )   $ by the first property of $ f $.
+This shows $ \left( \overline{ \theta } - \tau e  \right) _{ i } \in \left\{ 0, \pi  \right\}  $ for all $ i \in \left[ 1:n \right]  $.
+Now let $ \overline{ \theta }  $ be any angular representaion of a cut and $ \overline{ \vartheta } \in \left\{ 0, \pi  \right\} ^{ n }   $ its representant.
+In the proof of Proposition \ref{prop:propertiesf} we have seen that $ \cos( \overline{ \theta} _{ i } - \overline{ \theta }  _{ j }    )  = \cos( \overline{ \omega } _{ i } -
+\overline{ \omega } _{ j }  ) $ for all 
 \end{proof}
 Using this correspondence we can represent a cut by both $ \overline{ \theta }  $ and $ \overline{ x }  $. Given a binary representation of a cut $ \overline{ x }  $ (or an
 angular representation $ \overline{ \theta }  $), we denote the angular representation by $ \theta ( \overline{ x } ) $ 
@@ -1043,7 +1044,8 @@ Let $ x \in \left\{ 0,1 \right\} ^{ n } $ be a nonmaximum cut. Then $ \theta ( x
 %Assume $ \theta ( x) $ is a local minimum of $ f $. Then $ x $ is maximum cut, by \ref{thm:classificationcuts}. 
 The statement is the contraposition of the first statement in theorem \ref{thm:classificationcuts} 
 \end{proof}
-\todo[inline]{Incorporate last paragraph of section 3. I think it is linked to \ref{alg:improvedCut} }
+Therefore, as written in \cite[p.509]{Burer2002}, a good minimisation algorithm would not be attracted to stationary points which are not local minima. 
+We construct such an alogrithm in section \ref{burerHeuristic}.
 \newpage
 \section{A heuristic algorithm for \MCP} 
 \label{burerHeuristic} 
@@ -1107,6 +1109,9 @@ Furthermore we assume $ \theta_1 \leq \theta_2 \leq \dots \leq \theta_n  $.
 \caption{Procedure-Cut}
 \label{alg:ProcedureCUT} 
 \begin{algorithmic}[1]
+\Require Undirected weighted graph $ G $
+\Ensure A cut $ x^* $
+\State Let $ x^* $ trivial cut, i.e. all vertices on one side
 \State Let $ \alpha =0, \Gamma = -\infty , i =1 $. Let $ j $ be the smallest index such that $ \theta_j > \pi $ if there is one; otherwise set $ j = n+1 $. Set $ \theta _{ n+1
 } = 2\pi $.
 \While{ $ \alpha < \pi $}
@@ -1285,6 +1290,8 @@ We can set the termination condition to be N unsuccesful successive attempts of 
 \todo[inline]{Find a better name}
 \label{alg:improvedCut} 
 \begin{algorithmic}[1]
+\Require Undirected weighted graph $ G $
+\Ensure A cut $ x^* $
 \Procedure{\ImprovedCut}{input $ N, \theta^0 $}
 \State Given $ \theta^0 \in \mathbb{R} ^{ n }  $ and integer $ N \geq 0  $, let $ k=0 $ and $ \Gamma = - \infty  $
 \While{ $ k \leq N  $}
@@ -1316,12 +1323,14 @@ The sattlepoint is chosen by the associated cut with the highest weight.
 From a slight perturbation of that point we search for a local minimum, which has a sattlepoint with lower $ f $-value in its neighborhood.
 \begin{algorithm}
 \caption{BurerStub}
+\label{alg:BurerStub} 
 \todo[inline]{Find better name?}
 \begin{algorithmic}[1]
+\Require Undirected weighted graph $ G $
+\Ensure A cut $ x^* $
 \State Let $ x^* $ trivial cut, i.e. all vertices on one side
 \For{ $ i \gets 0,n $}
   \State Generate random $ \theta^0 \in \mathbb{R} ^{ n } $ 
-  \todo[inline]{How exactlY? Lookup in code}
   \State $ x \gets \Call{\ImprovedCut} $
   \If{ $ \gamma(x) > \gamma(x^*) $} 
     \State $ x^* \gets x $
@@ -1442,7 +1451,11 @@ The previous computation together with $  P ^{ \text{G}  }  _{ \text{BQP}  } = f
 minimising $ xQx^T $ is the same as maximising ...}
 \end{proof}
 
-\section{ Conclusion  } 
+\section{Experimental Setup} 
+The goal of our experimental study is to compare the performance of the \BH for a range of different parameters.
+We recall that 
+
+\section{Results} 
 The experiments gather further data that the \BH is highly effective in returning high quality approximations.
 Out of the \textcolor{red}{421} test instances with known optimum value, the instances for which the heuristic \textcolor{red}{returns a cut with ratio less than 0.878 (the
 performance guarantee in Goemans Williamson) } are so few we can name them here. They are
