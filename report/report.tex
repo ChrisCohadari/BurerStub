@@ -50,6 +50,7 @@
 \newcommandx{\BQP}{BQP\xspace}
 \newcommandx{\MCP}{MCP\xspace}
 \newcommandx{\SDP}{SDP\xspace}
+\newcommandx{\sdp}{semidefinite programming problem\xspace}
 \newcommandx{\mcp}{maximum cut problem}
 \newcommandx{\ImprovedCut}{ImprovedCut}
 \newcommandx{\BH}{Burer heuristic}
@@ -87,18 +88,24 @@ To tackle this problem approximation algorithms and heurisitc algorithms have be
 The text divides into conceptual parts: The first part can be considered the theoretical part, in which we try to give to develop \textcolor{red}{just enough }
 We begin by introducing a semidefinite relaxation for the maximum cut problem.
 
-In section \ref{sec:GoemansWilliamson}, we give an overview of the approximation algorithm \textcolor{red}{introduced by} Goemans and Williamson. We will explain the performance
-guarantee in detail. However, the proof of polynomial runtime will not be treated here, we refer to \cite{Korte2018}.
+In section \ref{sec:GoemansWilliamson}, we give an overview of the approximation algorithm \textcolor{red}{introduced by} Goemans and Williamson. 
+That includes introducing a \sdp relaxation for the \mcp and showing how to derive a cut from a set of points on the unit sphere.
+We will discuss the performance guarantee in detail. 
+However, the proof of polynomial runtime will not be treated here, we refer to \cite{Korte2018}.
 
 In section \ref{rankTworelaxation}, we lay the theoretical foundation for the \BH (described in section \ref{burerHeuristic}).
-This includes giving a rank-two relaxation in polar coordinates, which leads to an unconstrained nonconvex optimisation problem. This relaxation has the great feature that the
-number of variables is not increased, i.e. the number of variables remains the number of vertices.
+In particular we study the special case of the \textcolor{red}{SDP} relaxation introduced in section \ref{sec:GoemansWilliamson} for dimension two in polar coordinates.
+This leads to an unconstrained nonconvex optimisation problem, which has advantages and disadvantages.
+%This includes giving a rank-two relaxation in polar coordinates, which leads to an unconstrained nonconvex optimisation problem. 
+On the upside by using this relaxation the number of variables is not increased, 
+i.e. the number of variables remains the number of vertices of the graph.
 This implies good scalability to large instances.
 However as the function is nonconvex, we can not expect to solve this relaxation optimally.
 Therefore we face a trade-off between computational runtime and a theoretical guarantee, see \cite[p. 506]{Burer2002}.
 We will conduct experiments on \textcolor{red}{Mallach instance library} to investigate this trade-off. This yields data demonstrating the effectiveness.
 
 In section \ref{burerHeuristic} we give a detailed exposition of the \BH.
+\textcolor{red}{The heuristic combines the rank-two relaxation and Goemans-Williamson-type cuts.} 
 Given a set of points on the unit circle, we will provide a complete description of how to generate a best possible Goemans-Williamson-type cut in a deterministic manner. 
 Furthermore we will describe an algorithm to improve a cut value by means of trial and error, where the termination criterion is given by the number of successive unsuccesful
 attempts to improve the cut value.
@@ -523,7 +530,14 @@ the associated cut is at least 0.878 times the maximum possible value.
 \section{A rank-two relaxation} 
 \label{rankTworelaxation} 
 \todo[inline]{Write outline of first paragraph}
-\todo[inline]{Type of motivation from Goemans Williamson}
+\todo[inline]{Type out motivation from Goemans Williamson}
+In this section we will investigate relaxation \ref{def:relaxedbqp} in dimension two.
+Instead of using cartesian coordinates we will use polar coordinates.
+We will see that this change carries big changes.
+We will introduce the notion of angular representation of cuts, which are certain vectors that correspond to cuts.
+%The section will culminate in giving a classification of angular representation of cuts as extremal points of the objective function of the relaxation.
+The section will culminate in giving a classification of cuts as extremal points of the objective function of the relaxation.
+
 Using polar coordinates we can represent any point on the unit sphere by their angle.
 In other words for every $ v \in S^1 $, there exists a $ \theta \in \mathbb{R}  $ such that 
 \begin{align*}
@@ -1152,7 +1166,7 @@ x_i = \begin{cases}
 \end{rem} 
 \begin{lem}
 \label{lem:algGeneratesAllgwtc} 
-The algorithm \ref{alg:ProcedureCUT} returns a Goemans-Williamson-type cut of maximum weight ( with respect to the input) 
+For a given set of points $ \theta_1 \leq \dots \leq \theta_n   $ algorithm \ref{alg:ProcedureCUT} returns a Goemans-Williamson-type cut of maximum weight.
 \end{lem} 
 \begin{rem}
 Intuitively, this can be argued by slightly rotating the dividing line (through the origin) in the mathematically negative sense. 
@@ -1233,7 +1247,7 @@ unchanged). However if that happens to be a negative weight the cut we don't fin
 weights. Also remember that GW algo assumes nonnegative weights. }
 \end{proof}
 
-\textcolor{red}{As our rank-two relaxation has the form of the Goemans and Williamson relaxation with $ n=2 $, essentially the same analysis applies.}
+\textcolor{red}{As our rank-two relaxation has the form of the Goemans and Williamson relaxation with $ d=2 $, essentially the same analysis applies.}
 \textcolor{red}{Let us quickly go over the changes: \\
 As $ f $ is nonconvex, we can not expect to find the global minimum, only a local minimum.
 This destroys the performance guarantee of the algorithm.
@@ -1258,6 +1272,7 @@ On the other hand, since we fixed $ n = 2 $, we have a methodical and efficient 
 \item We did not solve the SDP so we arent at the global optimum
 \end{enumerate}
 }
+\begin{lem}
 Therefore the cut value generated by \ref{alg:ProcedureCUT} is at least 0.878 times the \textcolor{red}{relaxed cut value $ \psi (\theta) $ as defined in
 \ref{eq:psiRelaxedCut} }, written in a formuala:
 \improvement{Maybe put that in lemma}
@@ -1265,6 +1280,10 @@ Therefore the cut value generated by \ref{alg:ProcedureCUT} is at least 0.878 ti
 \label{eq:perfguarantee} 
 \gamma (x^*) \geq 0.878 \psi (\theta) 
 \end{align} 
+\end{lem} 
+\begin{proof}
+
+\end{proof}
 This is not a performance guarantee, as we can not guarantee that $ \psi ( \theta)  $ is an upper bound on the maximum cut value.
 \textcolor{red}{Recall, that in Goemans-Williamson algorithm, the guarantee comes from solving the \textcolor{red}{vector program}}
 \improvement{Vector Program not yet introduced} 
@@ -1281,7 +1300,7 @@ Using the assumptions we confirm
 \end{align*} 
 \end{proof}
 
-\textcolor{red}{ The next paragraph, describes the idea of \ref{alg:improvedCut} }
+\textcolor{red}{ The next paragraph, describes the idea of algorithm \ref{alg:improvedCut} }
 Minimize the function $ f $ and obtain a minimiser called $ \theta^1 $. 
 We can now start \ref{alg:ProcedureCUT} and obtain a best possible cut $ x^1 $ associated with $ \theta^1 $.
 At this point we can return the cut $ x^1 $.
