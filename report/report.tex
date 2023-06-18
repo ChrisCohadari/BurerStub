@@ -83,7 +83,7 @@
 
 \section{Introduction} 
 Thorughout this text we consider the \mcp, which is shown to be NP-hard by \cite{Garey1974}
-To tackle this problem approximation algorithms and heurisitc algorithms have been proposed.
+To tackle this problem approximation algorithms and heuristic algorithms have been proposed.
 
 The text divides into conceptual parts: The first part can be considered the theoretical part, in which we try to give to develop \textcolor{red}{just enough }
 We begin by introducing a semidefinite relaxation for the maximum cut problem.
@@ -107,7 +107,7 @@ We will conduct experiments on \textcolor{red}{Mallach instance library} to inve
 In section \ref{burerHeuristic} we give a detailed exposition of the \BH.
 \textcolor{red}{The heuristic combines the rank-two relaxation and Goemans-Williamson-type cuts.} 
 Given a set of points on the unit circle, we will provide a complete description of how to generate a best possible Goemans-Williamson-type cut in a deterministic manner. 
-Furthermore we will describe an algorithm to improve a cut value by means of trial and error, where the termination criterion is given by the number of successive unsuccesful
+Furthermore we will describe an algorithm to improve a cut value by means of trial and error, where the termination criterion is given by the number of consecutive unsuccessful
 attempts to improve the cut value.
 Lastly we will end the section with algorithm of the \BH.
 This is the algorithm on which the experimental data is based upon.
@@ -115,7 +115,7 @@ This is the algorithm on which the experimental data is based upon.
 In section \ref{BQP2MC} we show that instances of the binary quadratic programming problem can be transformed to instances of the maximum cut problem.
 
 In the \textcolor{red}{second part} we will go into computational results.
-We implemented the heuristic \textcolor{red}{(distilation from ..)} and ran it on the instance library provided by \textcolor{red}{Mallach.}
+We implemented the heuristic \textcolor{red}{(distillation from ..)} and ran it on the instance library provided by \textcolor{red}{Mallach.}
 The \textcolor{red}{results} described in \textcolor{red}{section}, gather more evidence, that the rank-two relaxation \textcolor{red}{proposed } by \textcolor{red}{Burer et
 al.} is highly effective.
 In the \textcolor{red}{results part} we will 
@@ -123,7 +123,7 @@ In the \textcolor{red}{results part} we will
 
 \section{A semidefinite relaxation for the Max cut problem} 
 \label{sec:GoemansWilliamson} 
-Throughout this text we consider undirected graphs G=(V,E) with $ V = \left[ 1:n \right] $ and $ E \subseteq \left\{ \left( i,j \right)  \in V \times V \mid i<j \right\} $.
+Throughout this text we consider undirected graphs G=(V,E) with $ V = \left[ 1:n \right] := \left\{ 1, \dots , n \right\} $ and $ E \subseteq \left\{ \left( i,j \right)  \in V \times V \mid i<j \right\} $.
 Note that we adopt this notation to stay coherent with \cite{Burer2002} on which this text is based.
 By the condition $ i < j $ there can only be one edge between the vertices $ i $ and $ j $, thus we could have just as well considered $ E \subseteq \left\{ \left\{ i,j
 \right\}  \mid i,j \in V: i \neq j  \right\} $.
@@ -132,7 +132,7 @@ We are interested in studying the weights of cuts in the graph $ G $.
 Given a bipartition of $ \left( S , \overline{ S }  \right)  $ of $ V $, a cut is the set $ \left\{ e \in E \mid \left| S \cap e \right| = 1 \text{ and } \left| \overline{ S }
 \cap e \right| = 1  \right\}  $. Clearly, a cut is not uniquely defined by $ \left( S , \overline{ S }  \right)  $, as $ \left( \overline{ S } , S \right)  $ generates the
 same cut. 
-Furthermore a cut is uniquely defined by a set $ X $, as the bipartion is uniquely given by $ \left( X, V \setminus X \right)  $.
+Furthermore a cut is uniquely defined by a set $ X $, as the bipartition is uniquely given by $ \left( X, V \setminus X \right)  $.
 The corresponding weight is obtained by summing the weights of the edges in the cut.
 The task of finding a cut of maximum weight is called the \mcp , abbreviated by \MCP, see \cite{Korte2018}:
 \begin{mdframed}[frametitle= {Maximum Weight Cut Problem}]
@@ -163,7 +163,7 @@ every edge $ \left\{ i,j \right\}  $ in the cut.
 On the other hand, for every edge $ \left\{ i,j \right\}  $ that is not in the cut we have $ i,j \in S $ or $ i,j \in \overline{ S }  $, implying $ x_i x_j = 1 $.
 \begin{align*}
 \frac{ 1 }{ 2 } \left( 1 - x_i x_j \right) = \begin{cases}
-1 & \left\{ i,j \right\} \text{ in the cut defined by } $ S $ \\
+1 & \left\{ i,j \right\} \text{ in the cut defined by } S  \\
 0 & \text{otherwise} 
 \end{cases}
 \end{align*} 
@@ -201,7 +201,7 @@ The solutions of \ref{def:mcp} and \ref{def:bqp} coincide.
 \end{lem} 
 \begin{proof}
 We first observe that the constraints of \ref{def:mcp} and \ref{def:bqp} coincide so it suffices to show that the target function of the BQP is minimised if and only if the
-target funciton of the MCP is maximised. The following computation uses that $ x_i x_j \in \left\{-1,1\right\}$ for all $ i,j \in \left[ 1 : n \right]  $ :
+target function of the \MCP is maximised. The following computation uses that $ x_i x_j \in \left\{-1,1\right\}$ for all $ i,j \in \left[ 1 : n \right]  $ :
 \begin{align*}
 &\sum_{ 1 \leq i < j \leq n    }^{  } w _{ ij } x_i x_j 
 = \sum_{  1 \leq i < j \leq n  }^{  } w _{ ij } x_i x_j \left[ x_i x_j = 1 \right]  + \sum_{ 1 \leq i < j \leq n    }^{  } w _{ ij } x_i x_j \left[ x_i x_j = -1\right] \\
@@ -261,7 +261,7 @@ Furthermore we have:
 \end{align*} 
 Thus we have $ \left\langle x , v \right\rangle + \left\langle y , v  \right\rangle =0 $ and using the first calculation we get $ \left\langle x , v \right\rangle <0 $ and $
 \left\langle y , v  \right\rangle   > 0$. 
-The claim follows by observing that $ v ^T X v = v ^T x y ^T v < 0  $ contradicting $ X $ postive semidefinite.
+The claim follows by observing that $ v ^T X v = v ^T x y ^T v < 0  $ contradicting $ X $ positive semidefinite.
 
 As $ x $ and $ y $ are linearly dependent, there exist an $ \lambda \in \mathbb{R}  $ such that $ X = \lambda x x ^T $ and $ X _{ ii } = \lambda x_i^2 $ for all $ i \in \left[
 1 : n \right] $. 
@@ -404,7 +404,7 @@ By construction we have that the two feasible solutions have the same value:
 \end{proof}
 \begin{rem}
 As this is essential, we reiterate how to retrieve a solution of \ref{def:relaxedbqp} from a solution $ X $ of \ref{def:relaxedsdp}:
-As $ X $ is a positive semidefinite matrix, using the Cholesky decomposition we compute a matrix $ L \in \mathbb{R} ^{ n \times n }  $ sucht that $ X = L^T L $. The columns of $
+As $ X $ is a positive semidefinite matrix, using the Cholesky decomposition we compute a matrix $ L \in \mathbb{R} ^{ n \times n }  $ such that $ X = L^T L $. The columns of $
 L $ are a solution to \ref{def:relaxedbqp}.
 \end{rem} 
 
@@ -448,8 +448,8 @@ The contribution of $ v_i $ and $ v_j $ to the value of OPT is, as we simply rea
 \frac{ 1 }{ 2 } w _{ ij } \left( 1 - \cos( \theta _{ ij }  )  \right) 
 \end{align*} 
 Therefore the contribution of $ v_i $ and $ v_j $ is the greater, the closer $ \theta _{ ij }  $ is to $ \pi  $ (, while considering the same $ w _{ ij }  $). 
-Geometrically this means, that diametrially opposed points have the highest contribution.
-This means that roughly speaking we want to seperate diametrially opposed points.
+Geometrically this means, that diametrically opposed points have the highest contribution.
+This means that roughly speaking we want to separate diametrically opposed points.
 The cuts introduced in the next Definition achieve just that.
 \begin{Def}[Goemans-Williamson-type cut] 
 A Goemans-Williamson-type cut for a direction $ r \in \mathbb{S} ^{ n }  $ is the cut given by 
@@ -461,11 +461,11 @@ two points are.
 \begin{lem}
 \label{lem:angle} 
 Let $ n \geq 2  $ and $ v_i , v_j \in \mathbb{S} ^{ n } $ different. We divide the unit sphere into two hemispheres by a hyperplane through the origin.
-The probability that $ v_i $ and $ v_j $ are seperated is given by $ P \left[ v_i \text{ and } v_j \text{ are separated}  \right] = \frac{ \theta _{ ij }  }{ \pi }   $
+The probability that $ v_i $ and $ v_j $ are separated is given by $ P \left[ v_i \text{ and } v_j \text{ are separated}  \right] = \frac{ \theta _{ ij }  }{ \pi }   $
 \end{lem} 
 \begin{proof}
 Consider the plane that contains $ 0,v_i $ and $ v_j $, given by $ \text{span} \left( v_i, v_j \right) $.
-A hyperplane (through the origin) seperates the two points if and only if its projection onto the plane is on intersect the arc connecting $ v_i, v_j $ on the sphere.
+A hyperplane (through the origin) separates the two points if and only if its projection onto the plane is on intersect the arc connecting $ v_i, v_j $ on the sphere.
 %\todo[inline]{Insert Picture}
 %\begin{tikzpicture}
 %\filldraw[black] (10:2cm) circle(1pt);
@@ -484,8 +484,8 @@ The expression $ \alpha := \min_{0 < \theta \leq \pi   } \frac{ 2 }{ \pi } \frac
 \end{lem} 
 \begin{proof}
 The enumerator has a simple zero and the denominator a zero of order two. As the terms are nonnegative we have $ \lim\limits_{\theta  \to 0 } = \frac{ 2 }{ \pi  } \frac{ \theta }{ 1 - \cos( \theta )  }
-= \infty $. Thus we have a contnuous function on an interval and the
-As the denominator and the numerator have simple zeroes in zero, the function can be continously extended in 0. Thus we have a contnuous function on an interval and the
+= \infty $. Thus we have a continuous function on an interval and the
+As the denominator and the numerator have simple zeroes in zero, the function can be continuously extended in 0. Thus we have a continuous function on an interval and the
 minimum will be attained.
 We take the derivative and get
 \begin{align*}
@@ -536,7 +536,7 @@ Instead of using cartesian coordinates we will use polar coordinates.
 We will see that this change carries big changes.
 We will introduce the notion of angular representation of cuts, which are certain vectors that correspond to cuts.
 %The section will culminate in giving a classification of angular representation of cuts as extremal points of the objective function of the relaxation.
-The section will culminate in giving a classification of cuts as extremal points of the objective function of the relaxation.
+The section will culminate in giving a classification of cuts as stationary points of the objective function of the relaxation.
 
 Using polar coordinates we can represent any point on the unit sphere by their angle.
 In other words for every $ v \in S^1 $, there exists a $ \theta \in \mathbb{R}  $ such that 
@@ -591,7 +591,7 @@ denotes the $ i $-th standard basis vector.
 \end{enumerate}
 \end{lem} 
 \begin{proof}
-We beginn by proving the first property. Let $ \theta \in \mathbb{R} ^{ n }  $ and $ \tau \in \mathbb{R}  $, it is sufficient to show $ T ( \theta + \tau e) = T ( \theta) $,
+We begin by proving the first property. Let $ \theta \in \mathbb{R} ^{ n }  $ and $ \tau \in \mathbb{R}  $, it is sufficient to show $ T ( \theta + \tau e) = T ( \theta) $,
 as this is the only term in $ f $ that depends on $ \theta $.
 This holds as for any $ i,j \in \left[ 1:n \right]  $ we have $T ( \theta + \tau e) _{ ij } =  \theta _{ i } + \tau - ( \theta _{ j } + \tau ) = \theta _{ i } - \theta _{ j } = T(
 \theta) _{ ij }  $.
@@ -608,8 +608,8 @@ This observation is of central importance and we denote the relaxation of the \M
 \label{def:minf}
 \min_{\theta \in \mathbb{R} ^{ n } } f(\theta)
 \end{align} 
-This point of view has favorable and unfavorable features.
-\improvement{This is an unconstrained optimization problem with a nonconvex objective function.}
+This point of view has favourable and unfavourable features.
+\improvement{This is an unconstrained optimisation problem with a nonconvex objective function.}
 As $ f $ is nonconvex we have no general tool to find a global minimum or even to decide if a local minimum is a global minimum.
 In general, there can be multiple local but nonglobal minima.
 However, formulation \ref{def:minf} is an unconstrained minimisation problem, with a fairly easy analytical description of $ f $. 
@@ -652,7 +652,7 @@ To justify the gradient, we only need to observe that $ \frac{ \partial  }{ \par
 \sin( T(\theta) )  $. This coincides with the $ j $-th entry of $ \left( W \circ \sin( T(\theta) )  \right) ^T e = \left( e^T \left( W \circ \sin( T (\theta )  \right)
 \right)^T$.
 \end{proof}
-To be able to classify extremal points we now compute the Hessian matrix, i.e. the second derivative of $ f $.
+To be able to classify stationary points we now compute the Hessian matrix, i.e. the second derivative of $ f $.
 \begin{lem}
 The Hessian matrix H of $ f $ is given by 
 \begin{align}
@@ -714,7 +714,7 @@ Moreover, the cut value corresponding to $ \overline{ \theta }  $ is
 \label{eq:psiRelaxedCut} 
 \psi ( \overline{ \theta } ) = \frac{ 1 }{ 2 } \sum_{ 1 \leq i < j \leq n  }^{  } w _{ ij } \left( 1 - \cos( \overline{ \theta } _{ i } - \overline{ \theta } _{ j }  )  \right) 
 \end{align} 
-In the next Proposition we give a detailed acount of this correspondence.
+In the next Proposition we give a detailed account of this correspondence.
 \begin{prop}
 Modulo the uniform rotation and the periodicity for each variable, there is an one-to-one correspondence between binary cuts and angular representations
 of a cut, given by
@@ -735,7 +735,7 @@ In the same manner we can set
 \end{prop} 
 \begin{proof}
 It is clear that assignment \ref{eq:ass1to1} assigns exactly one angular representation to a binary cut.
-On the other hand every angular representation of a cut has a representant, where every variable is either $ 0 $ or $ \pi $.
+On the other hand every angular representation of a cut has a representative, where every variable is either $ 0 $ or $ \pi $.
 Let $ \overline{ \theta}   $ be an angular representation of a cut. 
 By the second property, we can assume $ \overline{ \theta}_i  \in \left[ 0, 2 \pi \right)  $ for all $ i \in \left[ 1:n \right]  $.
 We only need to show that there exists a $ \tau \in \mathbb{R} $ such that $ \overline{ \theta }_i - \tau \in \left\{ 0, \pi  \right\}	$ for all $ i \in \left[ 1:n \right] $.
@@ -758,7 +758,7 @@ $ \overline{ \theta } _{ i } - \overline{ \theta } _{ j } = k \pi   $. By rearra
 $ \overline{ \theta } _{ j } = \overline{ \theta } _{ i } - k \pi = \widetilde{ k } \pi + \tau $.
 This shows equation \ref{eq:thetajtau}. 
 This shows $ \left( \overline{ \theta } - \tau e  \right) _{ i } \in \left\{ 0, \pi  \right\}  $ for all $ i \in \left[ 1:n \right]  $.
-Now let $ \overline{ \theta }  $ be any angular representaion of a cut and $ \overline{ \vartheta } \in \left\{ 0, \pi  \right\} ^{ n }   $ its representant.
+Now let $ \overline{ \theta }  $ be any angular representation of a cut and $ \overline{ \vartheta } \in \left\{ 0, \pi  \right\} ^{ n }   $ its representative.
 In the proof of Proposition \ref{prop:propertiesf} we have seen that $ \cos( \overline{ \theta} _{ i } - \overline{ \theta }  _{ j }    )  = \cos( \overline{ \omega } _{ i } -
 \overline{ \omega } _{ j }  ) $ for all 
 \end{proof}
@@ -780,7 +780,7 @@ A matrix $ M \in \mathbb{R} ^{ n \times n }  $ is called nonnegatively summable 
 equivalently, if $ u ^{ T} M u \geq 0    $ for every binary vector $ u \in \left\{ 0,1 \right\} ^{ n }  $ 
 \end{Def} 
 Put in words a principal submatrix is a matrix that we get by crossing out rows and corresponding columns, i.e. crossing out the $ i$-th row implies crossing out the $ i
-$-th coloum as well and vice versa.
+$-th column as well and vice versa.
 By definition, every semidefinite matrix is nonnegatively summable. However the other implication does not hold as the following example shows.
 \begin{exa}
 Let $ n>1 $ and denote the identity matrix as $ I \in \mathbb{R} ^{ n \times n }  $.
@@ -894,7 +894,7 @@ v_i & \text{if } \delta _{ i } = 1
 So far we have shown $ 0 \leq \delta ^T M ( \overline{ x }  ) \delta  $, however for nonnegative summability we need to argue $ 0 \leq y ^T M ( \overline{ x }
 ) y  $ for all $ y \in \left\{ 0,1 \right\} ^{ n }  $.\\
 \textbf{Claim}: For any $ y \in \left\{ 0,1 \right\} ^{ n } $ there exists a $ x \in \left\{ -1,1 \right\} ^{ n }  $ such that $ \delta = y $. \\
-First recal that $ \delta \in \left\{ 0,1 \right\} ^{ n } $ depends on $ \overline{ x }  $, which is fixed, and $ x $, which is a variable. 
+First recall that $ \delta \in \left\{ 0,1 \right\} ^{ n } $ depends on $ \overline{ x }  $, which is fixed, and $ x $, which is a variable. 
 To clarify this dependence we denote $ \delta $ as $ \delta _{ \overline{ x }  } \left( x \right)  $.
 As $ x \in \left\{ -1,1 \right\} ^{ n } $ can be chosen arbitrarily, we choose
 \begin{align*}
@@ -907,7 +907,7 @@ This choice directly implies $ \delta _{ \overline{ x }  } \left( x \right) = y 
 The claim shows that $ M ( \overline{ x }  )  $ is nonnegatively summable.
 Now we want to show that $ \overline{ x }  $ is minimum cut if and only if $ -  M( \overline{ x } ) $ is nonnegatively summable. 
 We do this in the same way as above only outlining the slight changes. Let $ q $ be the quadratic function we defined above, $ \overline{ x } \in \left\{ -1,1 \right\} ^{ n }
-$ a minimum cut and $ x \in \left\{ -1,1 \right\} ^{ n }  $ arbitrary. Thus we have $ 0 \geq  q(x) - q( \overline{ x } ) $ and the same compuations as above yield $ 0 \geq
+$ a minimum cut and $ x \in \left\{ -1,1 \right\} ^{ n }  $ arbitrary. Thus we have $ 0 \geq  q(x) - q( \overline{ x } ) $ and the same computations as above yield $ 0 \geq
 \delta ^T M ( \overline{ x } ) \delta \Leftrightarrow 0 \leq \delta ^T  \left( -M( \overline{ x } ) \right) \delta  $. The nonnegative summability of $ - M(
 \overline{ x } ) $ follows in the same manner as above.
 \end{proof}
@@ -940,7 +940,7 @@ matrix.
 \end{rem} 
 Comparing the Hessian of $ f $ as given in \ref{def:Hessian} to \ref{def:M(x)}, we see that the two look similar. 
 The difference is that $ \cos( T(\theta) )  $ in \ref{def:Hessian} is replaced by $ x  x  ^T  $ in \ref{def:M(x)}. Comparing the entries we see that $
-\cos( \theta_i - \theta_j ) = x_i x_j  $ for all $ i,j \in \left[ 1:n \right]  $ is a sufficent condition for $ H(\theta) = M(x) $.
+\cos( \theta_i - \theta_j ) = x_i x_j  $ for all $ i,j \in \left[ 1:n \right]  $ is a sufficient condition for $ H(\theta) = M(x) $.
 This observation leads to the next theorem providing a classification of angular representations of cuts as stationary points of the function 
 $ f $.
 \begin{thm}
@@ -957,12 +957,12 @@ Let $ \overline{ \theta }  $ be a local minimum of $ f $.
 As $ f $ is smooth $ H ( \overline{ \theta } ) $ is positive semidefinite and in particular nonnegatively summable. By $ H ( \overline{ x } ) = M ( \overline{ x } ) $ we have
 that $ M ( \overline{ x } ) $ is nonnegatively summable.
 Now let $ \overline{ \theta }  $ be a local maximum of $ f $. Then $ H ( \overline{ \theta } ) $ is negative semidefinite, that means that $ - H ( \overline{ \theta } ) $ is
-nonnegatively summbale. Therefore $ - H ( \overline{ \theta } ) = - M ( \overline{ x } ) $ implies that $ - M ( \overline{ x } ) $ is nonnegatively summable.
+nonnegatively summable. Therefore $ - H ( \overline{ \theta } ) = - M ( \overline{ x } ) $ implies that $ - M ( \overline{ x } ) $ is nonnegatively summable.
 Lastly let $ \overline{ x }  $ be neither a maximum cut nor a minimum cut.
 By Lemma \ref{lem:M(x)nonnegsum} we know that neither $ M ( \overline{ x } ) $ nor $ - M ( \overline{ x } ) $ is nonnegatively summable. 
 By $ M ( \overline{  x } ) = H ( \overline{ \theta } ) $ we have that $ H ( \overline{ \theta } )  $ is neither positive semidefinite nor negative semidefinite. By the
 necessary condition for a local extremum we conclude that $ \overline{ \theta }  $ is neither a local minimum nor a local maximum. As $ \overline{ \theta }  $ is a critical
-point of $ f $, it must be a sattle point.
+point of $ f $, it must be a saddle point.
 \end{proof}
 Although all cuts are stationary points of $ f $ (by \ref{prop:cutsArestationaryPoints}) Theorem \ref{thm:classificationcuts} shows that only the maximum points can be local minima of $ f $, see \cite[p. 508]{Burer2002}.
 \begin{exa}
@@ -1030,7 +1030,7 @@ M ( \overline{ x } )
 \end{pmatrix} 
 = -2 < 0
 \end{align*} 
-Using $ H ( \theta ( \overline{ x } ) )= M ( \overline{ x } ) $, we know that $ H ( \theta ( \overline{ x } ) ) $ is not postive semidefinite. Thus $ \theta ( \overline{ x } )
+Using $ H ( \theta ( \overline{ x } ) )= M ( \overline{ x } ) $, we know that $ H ( \theta ( \overline{ x } ) ) $ is not positive semidefinite. Thus $ \theta ( \overline{ x } )
 $ is not a local minimum of $ f $.
 \end{exa} 
 However there special classes of instances, where for every maximum cut $ \overline{ x }  $, the angular representation $ \theta ( \overline{ x } ) $ is a local minimum. 
@@ -1046,11 +1046,11 @@ For that cut $ f $ evaluates to $ - \frac{ 1 }{ 2 } e ^T W e  $.
 This value must be a global minimum of $ f $ as all the entries of $ W $ are nonnegative.
 \end{proof}
 For instances, where a maximum cut $ \overline{ x }  $ corresponds to a local minimum $ \theta ( \overline{ x } ) $ of $ f $, the optimality of $ x $ can be
-checked in polynomial time. That is because $ \theta ( \overline{ x } ) $ local minimum implies $ H ( \theta ( \overline{ x } ) = M ( \overline{ x } ) $ postive
+checked in polynomial time. That is because $ \theta ( \overline{ x } ) $ local minimum implies $ H ( \theta ( \overline{ x } ) = M ( \overline{ x } ) $ positive
 semidefinite. This in turn implies $ M ( \overline{ x } )  $ nonnegatively summable, which shows $ \overline{ x }  $ maximum cut by \ref{lem:M(x)nonnegsum}. 
 A detailed proof showing that we can decide whether a symmetric matrix (- $ M ( \overline{ x } ) $ is symmetric-) is positive semidefinite in polynomial time is provided in \cite{Korte2018} Theorem 16.8.
 
-Theorem \ref{thm:classificationcuts} directly implies the following Corollary, which plays an importrole for the heuristic we will develop in the next section.
+Theorem \ref{thm:classificationcuts} directly implies the following Corollary, which plays an important role for the heuristic we will develop in the next section.
 \begin{cor}
 Let $ x \in \left\{ 0,1 \right\} ^{ n } $ be a nonmaximum cut. Then $ \theta ( x )  $ can not be a local minimum.
 \end{cor} 
@@ -1059,12 +1059,12 @@ Let $ x \in \left\{ 0,1 \right\} ^{ n } $ be a nonmaximum cut. Then $ \theta ( x
 The statement is the contraposition of the first statement in theorem \ref{thm:classificationcuts} 
 \end{proof}
 Therefore, as written in \cite[p.509]{Burer2002}, a good minimisation algorithm would not be attracted to stationary points which are not local minima. 
-We construct such an alogrithm in section \ref{burerHeuristic}.
+We construct such an algorithm in section \ref{burerHeuristic}.
 \newpage
 \section{A heuristic algorithm for \MCP} 
 \label{burerHeuristic} 
 In this section we will describe the heuristic described by \cite{Burer2002}.
-Again we assume nonnegative edge weights, in order to mirror the analysis done in \ref{sec:GoemansWilliamson} 
+Again we assume nonnegative edge weights, in order to mirror the analysis done in \ref{sec:GoemansWilliamson}.
 
 We begin by minimising $ f $, i.e. finding a solution $ \theta $ to \ref{def:minf}.
 Note that $ \theta $ is not necessarily an angular representation of a cut.
@@ -1082,15 +1082,15 @@ x_i = \begin{cases}
 generating a cut.
 The weight of the obtained cut is given by
 \begin{align*}
-\gamma (x) = \frac{ 1 }{ 2 } \sum_{ i>j   }^{  } w _{ ij } \left( 1 - x_i x_j \right) 
+\gamma (x) = \frac{ 1 }{ 2 } \sum_{ 1 \leq i < j \leq n }^{  } w _{ ij } \left( 1 - x_i x_j \right) 
 \end{align*} 
 \begin{rem}
 \begin{enumerate}
 \item 
 Let $ \theta \in \left[ 0, 2 \pi  \right) ^{ n }  $ and $ \alpha \in \left[ 0,\pi \right)  $.
-Let $  x ^{ \alpha }  $ denote the cut generated by $ \alpha $ and $  x ^{ \alpha + \pi  }  $ the cut generated by $ \alpha + \pi $,
-we then have $ x  ^{ \alpha + \pi } = - x  ^{ \alpha }  $. 
-For $ \alpha + \pi  $ assignement \ref{eq:assigncut} is to be understood as:
+Let $  x ^{ \alpha }  $ denote the cut generated by $ \alpha $ and $  x ^{ \alpha + \pi  }  $ the cut generated by $ \alpha + \pi $.
+We then have $ x  ^{ \alpha + \pi } = - x  ^{ \alpha }  $. 
+For $ \alpha + \pi  $ assignment \ref{eq:assigncut} is to be understood as:
 \begin{align*}
 x_i = \begin{cases}
 1 & \text{if } \theta_i \in \left[ 0, \alpha \right) \cup \left[ \alpha + \pi , 2 \pi  \right) \\
@@ -1100,10 +1100,10 @@ x_i = \begin{cases}
 By observing $ \left[ 0 , 2 \pi  \right) = \left[ \alpha, \alpha + \pi  \right) \cupdot \left(  \left[ 0, \alpha
 \right) \cup \left[ \alpha + \pi , 2 \pi  \right)  \right) $ we deduce $ - x ^{ \alpha } = x ^{ \alpha + \pi  }  $.
 \item 
-Choosing the halfopen interval $ \left[ \alpha, \alpha + \pi  \right) $ ensures, that diametrially opposed points are seperated, i.e. the corresponding vertices are on
-diferent sides of the cut.
+Choosing the halfopen interval $ \left[ \alpha, \alpha + \pi  \right) $ ensures, that diametrically opposed points are separated, i.e. the corresponding vertices are on
+different sides of the cut.
 \textcolor{red}{This is a positive feature:
-We denote  $ x ^{ \text{GW}  }  $ .... and $ x ^{ \text{B}  }  $ the assignement obtained by \ref{eq:assigncut} \\
+We denote  $ x ^{ \text{GW}  }  $ .... and $ x ^{ \text{B}  }  $ the assignment obtained by \ref{eq:assigncut} \\
 We have $ x ^{ \text{GW}  } _{ i } \neq x ^{ \text{B}  } _{ i } $ if and only if $ \theta_i = \alpha + \pi  $
 }
 \textcolor{red}{
@@ -1112,15 +1112,18 @@ It can be understood as finds all the best possible Goemans-Williamson-type cuts
 }
 \end{enumerate}
 \end{rem} 
-As we are given a set of points on the unit circle, it is easy to examine all the possible cuts obtained by assignement \ref{eq:assigncut}. 
-That is because the unit circle is one dimensional and we are able to traverse all Goemans-Williamson-type cuts by controlling only one variable.
+By increasing $ \alpha $ we have a simple and computationally inexpensive way to examine all cuts obtained by assignment \ref{eq:assigncut}.
+As we will describe in algorithm \ref{alg:ProcedureCUT} we have a deterministic way of finding a best possible Goemans-Williamson-type cut. 
+
+As we are given a set of points on the unit circle, it is easy to examine all the possible cuts obtained by assignment \ref{eq:assigncut}. 
+%That is because the unit circle is one dimensional and we are able to traverse all Goemans-Williamson-type cuts by controlling only one variable.
 Thus a big difference to the algorithm in \ref{sec:GoemansWilliamson} is that we have a deterministic way of obtaining the best possible \textcolor{red}{Goemans-Williamson-type
 cut} associated to a given $ \theta $.
-\todo[inline]{Actually we do not necessarily traverse all possible Goemans-Williamson-type cut as, diametrially opposed points are always separated. \\
+\todo[inline]{Actually we do not necessarily traverse all possible Goemans-Williamson-type cut as, diametrically opposed points are always separated. \\
 However we should be able to argue that, we still find the best one, reasoning something like this: \\ 
-The vectors are diametrially opposed for a good reason, as the points solve the vector program, and they could have been chosen differently. This argument does not feel
+The vectors are diametrically opposed for a good reason, as the points solve the vector program, and they could have been chosen differently. This argument does not feel
 watertight anymore, as we do not solve the vector program optimally, but only obtain a local min. \\
-Maybe this is good enough, as we may still be able to argue, that for a given set of points the diamatral opposition is optimal, if it weren't slightly moving one point could
+Maybe this is good enough, as we may still be able to argue, that for a given set of points the diametric opposition is optimal, if it weren't slightly moving one point could
 improve the cut. Contradiction to local minimum of $ f $.
 }
 Before we describe the algorithm in detail, we will make two assumptions without loss of generality.
@@ -1175,10 +1178,10 @@ But not so far, that any other points change their assignment.
 In the following we will make this precise.
 \end{rem} 
 \begin{proof}[Proof of Lemma \ref{lem:algGeneratesAllgwtc}]
-To show that the returned cut is a Goemans-Williamson-type cut, it suffices to show that for every $ \alpha \in \left[ 0, \pi  \right) $ assignement \ref{eq:assigncut} can be
+To show that the returned cut is a Goemans-Williamson-type cut, it suffices to show that for every $ \alpha \in \left[ 0, \pi  \right) $ assignment \ref{eq:assigncut} can be
 achieved by a Goemans-Williamson-type cut. 
 We begin by showing that th
-Assignement \ref{eq:assigncut} states: $ x_i = 1 $ if $ \theta_i \in \left[ \alpha, \alpha + \pi  \right) $. As this is a half open interval, we need to argue that assignment \ref{eq:assigncut} can
+Assignment \ref{eq:assigncut} states: $ x_i = 1 $ if $ \theta_i \in \left[ \alpha, \alpha + \pi  \right) $. As this is a half open interval, we need to argue that assignment \ref{eq:assigncut} can
 be achieved by a Goemans-Williamson-type cut: \\
 Let $ P = \left\{ i \in \left[ 1:n \right]  \mid \theta_i \in \left[ \alpha, \alpha + \pi  \right) \right\}   $, denote the indices that are assigned to $ x_i = 1 $. The
 indices that are assigned to $ x_i = -1 $ are denoted by $ N := \left[ 1:n \right] \setminus P $.
@@ -1241,18 +1244,34 @@ Similarly, for $ x_i = -1 $, we have $ \theta_i \in \left[ \alpha + \pi , 2 \pi 
 . By $ 0 < \varepsilon < \varepsilon _{ N }  $ we in particular have $ \theta_i \in \left( \alpha + \pi - \varepsilon , 2 \pi  \right) \cup \left[ 0, \alpha - \varepsilon
 \right)  $, which shows $ x ^{ \text{GW}  } _{ i } = -1 $.
 \todo[inline]{So far we have shown that the Goemans-Williamson-type cut between two .. cuts eval to the same \\
-This doesnt show that all Goemans-Williamson-type cuts can be gen by \ref{eq:assigncut}. The ones missing are the ones where $ \theta_i = \alpha, \theta _{ j } = \alpha + \pi
-$ are in the same set. This is not a problem if all weigths are nonnegative, also the two being diametrially opposed is a better cut (as the other assignements remain
+This does not show that all Goemans-Williamson-type cuts can be gen by \ref{eq:assigncut}. The ones missing are the ones where $ \theta_i = \alpha, \theta _{ j } = \alpha + \pi
+$ are in the same set. This is not a problem if all weights are nonnegative, also the two being diametrically opposed is a better cut (as the other assignments remain
 unchanged). However if that happens to be a negative weight the cut we don't find might be better. This is import with regard to the results as we have instances, with neg
 weights. Also remember that GW algo assumes nonnegative weights. }
 \end{proof}
 
+
+\todo[inline, caption={2do}]{We are going to go into the changes: \\
+\begin{enumerate}
+\item The cut we obtain is not probabilistic but optimal, for the distribution of points
+\item We did not solve the SDP so we are not at the global optimum
+\end{enumerate}
+}
+\begin{lem}
+Let $ \theta \in \mathbb{R} ^{ n }  $. Then the cut value generated by \ref{alg:ProcedureCUT} is at least 0.878 times the \textcolor{red}{relaxed cut value $ \psi (\theta) $ as defined in
+\ref{eq:psiRelaxedCut} }, written in a formula:
+\begin{align}
+\label{eq:perfguarantee} 
+\gamma (x^*) \geq 0.878 \psi (\theta) 
+\end{align} 
+\end{lem} 
+\begin{proof}
 \textcolor{red}{As our rank-two relaxation has the form of the Goemans and Williamson relaxation with $ d=2 $, essentially the same analysis applies.}
 \textcolor{red}{Let us quickly go over the changes: \\
 As $ f $ is nonconvex, we can not expect to find the global minimum, only a local minimum.
 This destroys the performance guarantee of the algorithm.
 Let us show how to appropriately change this: \\
-The local minium of $ f $, say $ \theta \in \mathbb{R} ^{ n } $ represents the points 
+The local minimum of $ f $, say $ \theta \in \mathbb{R} ^{ n } $ represents the points 
 $
 v_i =
 \begin{pmatrix}
@@ -1266,23 +1285,6 @@ This is closely linked with the fact that we do not solve the \SDP.
 On the other hand, since we fixed $ n = 2 $, we have a methodical and efficient way to find the cut values of all possible Goemans-Williamson-type cut, see
 \ref{lem:algGeneratesAllgwtc}.
 }
-\todo[inline, caption={2do}]{We are going to go into the changes: \\
-\begin{enumerate}
-\item The cut we obtain is not probabilistic but optimal, for the distribution of points
-\item We did not solve the SDP so we arent at the global optimum
-\end{enumerate}
-}
-\begin{lem}
-Therefore the cut value generated by \ref{alg:ProcedureCUT} is at least 0.878 times the \textcolor{red}{relaxed cut value $ \psi (\theta) $ as defined in
-\ref{eq:psiRelaxedCut} }, written in a formuala:
-\improvement{Maybe put that in lemma}
-\begin{align}
-\label{eq:perfguarantee} 
-\gamma (x^*) \geq 0.878 \psi (\theta) 
-\end{align} 
-\end{lem} 
-\begin{proof}
-
 \end{proof}
 This is not a performance guarantee, as we can not guarantee that $ \psi ( \theta)  $ is an upper bound on the maximum cut value.
 \textcolor{red}{Recall, that in Goemans-Williamson algorithm, the guarantee comes from solving the \textcolor{red}{vector program}}
@@ -1299,19 +1301,20 @@ Using the assumptions we confirm
 \gamma ( x ^{ * } _{ b } ) \overset{ \ref{eq:perfguarantee}  }{ \geq  } 0.878 \cdot \psi ( \theta_b) > \psi ( \theta_a) \geq \gamma ( x ^{ * } _{ a } ) 
 \end{align*} 
 \end{proof}
-
-\textcolor{red}{ The next paragraph, describes the idea of algorithm \ref{alg:improvedCut} }
-Minimize the function $ f $ and obtain a minimiser called $ \theta^1 $. 
+The next paragraph, describes the idea of algorithm \ref{alg:improvedCut}.
+We minimise the function $ f $ and obtain a minimiser called $ \theta^1 $. 
 We can now start \ref{alg:ProcedureCUT} and obtain a best possible cut $ x^1 $ associated with $ \theta^1 $.
 At this point we can return the cut $ x^1 $.
-\textcolor{red}{If $ \theta^1 $ happens to be an angular representation of a cut we know that $ x^1 $ is a maximum cut, by theorem \ref{thm:classificationcuts}.}
-Otherwise, we can continue to try and improve the cut value, if we are willing to spend the computational resources. 
-By theorem \ref{thm:classificationcuts} we know that the angular representation of $ x^1 $, denoted as $ \theta ( x^1)  $, is a stationary point of $ f $. 
-\textcolor{red}{As we use a gradient descend,} restarting the minimisation from a stationary point is of no use.
+If $ \theta^1 $ happens to be an angular representation of a cut we know that $ x^1 $ is a maximum cut, by theorem \ref{thm:classificationcuts}.
+Otherwise, we can continue to try and improve the cut value by spending more computational resources. 
+By theorem \ref{thm:classificationcuts} we know that the angular representation of $ x^1 $, denoted as $ \theta ( x^1)  $, is a stationary point of $ f $, most likely a
+saddle point. 
+Therefore we can hope to find a deeper local minimum close to $ \theta ( x^1) $.
+As we use a gradient descend, restarting the minimisation from a stationary point is of no use.
 Thus we restart the minimisation of $ f $ from a slight perturbation of $ \theta (x^1) $, in hopes of finding another local minimum $ \theta^2 \neq \theta^1  $ from which we
 hope to obtain a cut $ x^2 $ with a higher cut value than $ x^1 $, i.e. $ \gamma (x^2) > \gamma (x^1)  $.
-\textcolor{red}{ In case $ \gamma (x^2) > \gamma (x^1) $ is achieved we deem our attempt succesful, and unsuccesful otherwise. }
-We can set the termination condition to be N unsuccesful successive attempts of improving the value of the cut.
+In case $ \gamma (x^2) > \gamma (x^1) $ is achieved we deem our attempt successful, and unsuccessful otherwise.
+We can set the termination criterion to be $ N $ consecutive unsuccessful attempts of improving the value of the cut.
 \begin{algorithm}
 \caption{\ImprovedCut}
 \todo[inline]{Find a better name}
@@ -1322,7 +1325,7 @@ We can set the termination condition to be N unsuccesful successive attempts of 
 \Procedure{\ImprovedCut}{input $ N, \theta^0 $}
 \State Given $ \theta^0 \in \mathbb{R} ^{ n }  $ and integer $ N \geq 0  $, let $ k=0 $ and $ \Gamma = - \infty  $
 \While{ $ k \leq N  $}
-\State Starting from $ \theta^0 $, minimize $ f $ to get $ \theta  $
+\State Starting from $ \theta^0 $, minimise $ f $ to get $ \theta  $
 \State Compute a best cut $ x $ associated with $ \theta $ by \ref{alg:ProcedureCUT} 
 \If{$ \gamma (x) > \Gamma $}
 \State Let $ \Gamma = \gamma (x), x^* = x $ and $ k=0 $
@@ -1336,18 +1339,18 @@ We can set the termination condition to be N unsuccesful successive attempts of 
 \end{algorithmic}
 \end{algorithm}
 
-In \ref{alg:improvedCut} we have $ \theta^0 $ as input, which is the initial seed for the minimisatio of $ f $. We can try and improve our chances of finding a high quality
+In \ref{alg:improvedCut} we have $ \theta^0 $ as input, which is the initial seed for the minimisation of $ f $. We can try and improve our chances of finding a high quality
 heuristic solution by increasing running \ref{alg:improvedCut} multiple times, in other words increase the number of seeds. The number of seeds, will be given by the input M.
-\improvement{Write how increasing M and N usually leads to better solutions but the runtime can nnot be vorhergesagt. Also there can be lucky punches, say start at the angular
+\improvement{Write how increasing M and N usually leads to better solutions but the runtime can not be vorhergesagt. Also there can be lucky punches, say start at the angular
 representation of a cut.}
 
 The algorithm \ref{alg:improvedCut}, can also be interpreted in the following way.
 \improvement{We assume that we do not find the optimum cut.}
-From a seed we start minimising $ f $. By means of Goemans-Williamson-type cuts, we look for nearby sattlepoints. 
-\textcolor{red}{Here it is important to note, that nearby is to be understood by the cuts that we can generate from the minimum. The so found sattlepoint is not necessarily
-the closest sattlepoint in the euclidean metric.}
-The sattlepoint is chosen by the associated cut with the highest weight.
-From a slight perturbation of that point we search for a local minimum, which has a sattlepoint with lower $ f $-value in its neighborhood.
+From a seed we start minimising $ f $. By means of Goemans-Williamson-type cuts, we look for nearby saddle points. 
+\textcolor{red}{Here it is important to note, that nearby is to be understood by the cuts that we can generate from the minimum. The so found saddle points is not necessarily
+the closest saddle point in the euclidean metric.}
+The saddle point is chosen by the associated cut with the highest weight.
+From a slight perturbation of that point we search for a local minimum, which has a saddle point with lower $ f $-value in its neighbourhood.
 \begin{algorithm}
 \caption{BurerStub}
 \label{alg:BurerStub} 
@@ -1366,7 +1369,10 @@ From a slight perturbation of that point we search for a local minimum, which ha
 \State \Return $ x^* $
 \end{algorithmic}
 \end{algorithm}
-\todo[inline]{reference of algorithms doesnt work! fix in whole file!}
+\todo[inline]{reference of algorithms does not work! fix in whole file!}
+Generally speaking the bigger $ M $ and $ N $ are the longer the algorithm will run and the better the returned cut will be.
+However as the termination criterion in \textcolor{red}{IMPROVEDCUT} relies on the number of unsuccessful attempts there can always be exceptions.
+We will investigate the performance of the heuristic for a set of different choices for $ M $ and $ N $.
 \newpage
 \section{Solving BQP with this heuristic} 
 \label{BQP2MC} 
@@ -1379,7 +1385,7 @@ Let $ Q \in \mathbb{R} ^{ n \times n }  $
 \end{mini}
 can be solved by solving the \MCP on a suitable graph with appropriately chosen edge weights. 
 \improvement{Maybe begin by lemma showing that if there are no diagonal entries it is fairly simple}
-\todo[inline]{This should orient itself to Mallachs Paper. Something along the lines of This is a BQP we are interested in solving, this is the way to transform it to a MCP}
+\todo[inline]{This should orient itself to Mallachs Paper. Something along the lines of This is a BQP we are interested in solving, this is the way to transform it to a \MCP}
 The goal of this \textcolor{red}{section} \improvement{choose right word if not section, will see later} is to lay out the relationship between the \textcolor{red}{BQP} and
 \textcolor{red}{MC}. 
 \improvement{We have done a special case of this in \ref{lem:01}, where $ Q $ is a strict upper diagonal matrix. However the following construction is much more general.}
@@ -1443,7 +1449,7 @@ Let $ f : \mathbb{R} ^{ F  }  \to \mathbb{R} ^{ V \cup E }  $ be the bijective l
 Then $ P ^{ \text{G}  }  _{ \text{BQP}  } = f \left( P ^{ \text{H}  } _{ \text{CUT}  }  \right)   $.
 \end{thm} 
 \todo[inline]{This statement is not proven in Mallachs lecture notes, but the paper is:
-C. De Simone, “The cut polytope and the boolean quadric polytope”, Discrete Math. 79 (1989), 71–75}
+C. De Simone, “The cut polytope and the boolean quadratic polytope”, Discrete Math. 79 (1989), 71–75}
 %\textcolor{red}{The Theorem shows that the polytope of \BQP i}
 
 Using this Theorem we can show a fundamental result allowing us to solve \textcolor{red}{BQP} as \textcolor{red}{MC}. 
