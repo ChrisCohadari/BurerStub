@@ -51,9 +51,11 @@
 \newcommandx{\MCP}{MCP\xspace}
 \newcommandx{\SDP}{SDP\xspace}
 \newcommandx{\sdp}{semidefinite programming problem\xspace}
-\newcommandx{\mcp}{maximum cut problem}
-\newcommandx{\ImprovedCut}{ImprovedCut}
-\newcommandx{\BH}{Burer heuristic}
+\newcommandx{\mcp}{maximum cut problem\xspace}
+\newcommandx{\ImprovedCut}{ImprovedCut\xspace}
+\newcommandx{\BH}{Burer heuristic\xspace}
+\newcommandx{\MallachLibrary}{ \cite{MallachLibrary}\xspace}
+
 
 \geometry{right=2cm, left=2.5cm, top=2cm}
 
@@ -546,7 +548,7 @@ v =
 \sin( \theta ) 
 \end{pmatrix}.
 \end{align*}
-Therefore we can represent $ n $ points $ v_1, \dots, v_n $ on the unit sphere, by a vector 
+Thus we can represent $ n $ points $ v_1, \dots, v_n $ on the unit sphere, by a vector 
 $ \theta = \left( \theta _{ 1 } , \dots, \theta _{ n }  \right) \in \mathbb{R} ^{ n }  $, such that 
 the $ i $-th vector corresponds to the $ i $-th coordinate:
 \begin{align}
@@ -1378,40 +1380,43 @@ Generally speaking the bigger $ M $ and $ N $ are the longer the algorithm will 
 However as the termination criterion in \textcolor{red}{IMPROVEDCUT} relies on the number of unsuccessful attempts there can always be exceptions.
 We will investigate the performance of the heuristic for a set of different choices for $ M $ and $ N $.
 \newpage
-\section{Solving BQP with this heuristic} 
+\section{Solving \BQP using \MCP} 
 \label{BQP2MC} 
-Closely following \cite[]{Mallach2021} we are going to give a cursory explanation, that binary quadratic problems of the form:
+Closely following \cite[Section 2]{Mallach2021} we are going to give a cursory explanation, that binary quadratic problems of the form:
 Let $ Q \in \mathbb{R} ^{ n \times n }  $
 \begin{mini}
 {}{ x^TQx }{}{}
 \label{def:01bqp}
 \addConstraint{}{   x_i   \in \left\{ 0,1 \right\}       }{ \forall i \in  [1:n]}
 \end{mini}
-can be solved by solving the \MCP on a suitable graph with appropriately chosen edge weights. 
-\improvement{Maybe begin by lemma showing that if there are no diagonal entries it is fairly simple}
-\todo[inline]{This should orient itself to Mallachs Paper. Something along the lines of This is a BQP we are interested in solving, this is the way to transform it to a \MCP}
-The goal of this \textcolor{red}{section} \improvement{choose right word if not section, will see later} is to lay out the relationship between the \textcolor{red}{BQP} and
-\textcolor{red}{MC}. 
-\improvement{We have done a special case of this in \ref{lem:01}, where $ Q $ is a strict upper diagonal matrix. However the following construction is much more general.}
+can be solved by solving the \MCP on a suitable graph with appropriately chosen edge weights, see Corollary \ref{cor:bqp2mcp}.
 
 To this end we formulate the \MCP as an integer linear programming problem:
-\todo[inline]{def opti}
-
 \begin{mini}
 {}{  \sum_{ e \in E  }^{  } w_e z_e }{}{}
 \label{def:mcpILP} 
-\addConstraint{  \sum_{ e \in F  }^{  } z _{ e } - \sum_{ e \in C \setminus F  }^{  }  }{  \leq \left| F  \right| -1  }{ \quad  F \subseteq C \subseteq E  \text{ subject to } C \text{ cycle and } \left| F \right| \text{ odd} }
+\addConstraint{  \sum_{ e \in F  }^{  } z _{ e } - \sum_{ e \in C \setminus F  }^{  } z_e }{  \leq \left| F  \right| -1  }{ \quad  F \subseteq C \subseteq E  \text{ subject to } C \text{ cycle and } \left| F \right| \text{ odd} }
 \addConstraint{  0 \leq z_e    }{ \leq 1}{ \quad \forall e \in E}
 \addConstraint{   z_e    }{ \in  \mathbb{Z}  }{ \quad \forall e \in E}
 \end{mini}
 
 \improvement{give the intuition for odd cycle constraints}
-An optimal solution to \ref{def:mcpILP} gives us the following maximum cut $ \left\{ \left\{ i,j \right\}  \mid z _{ ij } = 1 \right\}  $
-
+An optimal solution to \ref{def:mcpILP} gives us the following maximum cut $ \left\{ \left\{ i,j \right\}  \mid z _{ ij } = 1 \right\}  $.
+Any cut of $ G $ is a feasible solution to \ref{def:mcpILP} and vice versa.
 The cut polytope of a graph $ G $ can thus be denoted as 
 \begin{align*}
-P ^{ G } _{ \text{CUT}  } := \left\{ z \in \left[ 0,1 \right] ^{ E }   \mid  z \text{ is a feasible solution to } \ref{def:mcpILP} \right\} 
+P ^{ G } _{ \text{CUT}  } := \left\{ z \in \left[ 0,1 \right] ^{ E }   \mid  z \text{ is a feasible solution to } \ref{def:mcpILP} \right\}.
 \end{align*} 
+
+For the \BQP \ref{def:01bqp} consider the following undirected graph $ G = (V,E) $. The vertices $ V = \left\{ v_1, \dots , v_n \right\} $, where $ v_i $ corresponds to the
+variable $ x_i $ for every $ i \in \left[ 1:n \right]  $ and $ E = \left\{ \left\{ v_i, v_j \right\}  \mid i,j \in \left[ 1:n \right] : q _{ ij } + q _{ ji } \neq 0  \right\}
+$ where each edge $ \left\{ v_i , v_j \right\}  $ corresponds to the product $ y _{ ij } := x_i x_j $.
+We admit that the Boolean quadric polytope is given by 
+\begin{align*}
+P ^{ G } _{ \text{BQP} } = \left\{ (x,y) \in \left\{ 0,1 \right\} ^{ \left| V \right|  } \times \left\{ 0, 1 \right\} ^{ \left| E \right|  }  \mid (x,y) \text{ satisfies } y
+_{ ij } = x_i x_j \right\}.
+\end{align*} 
+
 %To get a grasp of the problem we start by treating the special case where all the diagonal entries of $ Q \in \mathbb{R} ^{ n \times n}  $ are zero, i.e. $ \text{diag} (Q) = 0 $.
 %In the rest of this paragraph we will motivate the choice of the corresponding graph.
 %In this special case the construct
@@ -1452,26 +1457,23 @@ Let $ f : \mathbb{R} ^{ F  }  \to \mathbb{R} ^{ V \cup E }  $ be the bijective l
 \end{align*}  
 Then $ P ^{ \text{G}  }  _{ \text{BQP}  } = f \left( P ^{ \text{H}  } _{ \text{CUT}  }  \right)   $.
 \end{thm} 
-\todo[inline]{This statement is not proven in Mallachs lecture notes, but the paper is:
-C. De Simone, “The cut polytope and the boolean quadratic polytope”, Discrete Math. 79 (1989), 71–75}
-%\textcolor{red}{The Theorem shows that the polytope of \BQP i}
 
-Using this Theorem we can show a fundamental result allowing us to solve \textcolor{red}{BQP} as \textcolor{red}{MC}. 
-More specifically the \BQP is of the form:
-\begin{cor}
+Using this Theorem we can show a fundamental result allowing us to solve a \BQP as a \MCP. 
+\begin{cor}[{\cite[p. 2]{MallachLectureNotes}}]
+\label{cor:bqp2mcp} 
 Let $ Q \in \mathbb{R} ^{ n \times n }  $ and $ E = \left\{ \left\{ i,j \right\}  \mid i,j \in \left[ 1:n \right] \text{ such that } q _{ ij } + q _{ ji } \neq 0  \right\}  $.
 Then the corresponding \BQP with the objective function $ x ^T Q x $ to be minimised can be solved as a \MCP on $ H = \left( W,F \right)  $ where $ W := \left\{ v_0,
 \dots, v_n \right\}  $ and $ F := \left\{ \left\{ v_i,v_j \right\}  \mid \left\{ i,j \right\} \in E \right\} \cup \left\{ \left\{ v_0,v_i \right\}  \mid i \in \left[ 1:n
-\right]   \right\}  $, with the objective function:
+\right]   \right\}  $, with the objective function
 \begin{align*}
 \max \sum_{  \substack{ \left\{ v_i,v_j \right\} \in F \\ v_i \neq v_0 \neq v_j	 }  }^{  } \frac{ 1 }{ 2 } \left( q _{ ij } + q _{ ji }  \right) z _{ ij } - \sum_{ i \in W
-\setminus \left\{  v_0  \right\} }^{  } \widetilde{ c } _{ i } z _{ 0i } 
+\setminus \left\{  v_0  \right\} }^{  } \widetilde{ c } _{ i } z _{ 0i },
 \end{align*} 
 where $ \widetilde{ c }_i := q _{ ii } + \sum_{ j=1  }^{ n } \frac{ 1 }{ 2 } \left( q _{ ij } + q _{ ji }  \right) \left[ \left\{ v_i , v_j \right\} \in F, v_i \neq v_0 \neq v_j
-\right]  $ for all $ i \in W \setminus \left\{ v_0 \right\}  $ 
+\right]  $ for all $ i \in W \setminus \left\{ v_0 \right\}  $.
 \end{cor} 
 \begin{proof}
-We have the following equality 
+We have the following chain of equalities:
 \begin{align*}
 &x Q x ^T \\
 =& \sum_{ i,j = 1 }^{ n } q _{ ij } x_i x_j + \sum_{ i = 1 }^{ n } q _{ ii } x_i x_{ i } \\
@@ -1482,19 +1484,23 @@ ij }  \right)  \right) + \sum_{ i \in W \setminus \left\{ v_0 \right\}   }^{  } 
 =& -  \sum_{ \left\{ i,j \right\} \in E  }^{  } \frac{ 1 }{ 2 } \left( q _{ ij } + q _{ ji }  \right) z _{ ij } + 
 \frac{ 1 }{ 2 } \sum_{  \left\{ i,j \right\}  \in E }^{ } \left( q _{ ij } +
 q _{ ji }  \right) \left(  z _{ 0i } + z _{ 0j } \right) + \sum_{ i \in W \setminus \left\{ v_0 \right\}   }^{  } q _{ ii } z _{ 0i } \\
-=& - \sum_{ \left\{ i,j \right\} \in E }^{  } \frac{ 1 }{ 2 } \left( q _{ ij } + q _{ ji }  \right) z _{ ij } + 
+\overset{ \ast}{ =} & - \sum_{ \left\{ i,j \right\} \in E }^{  } \frac{ 1 }{ 2 } \left( q _{ ij } + q _{ ji }  \right) z _{ ij } + 
 \sum_{ i \in W \setminus \left\{ v_0 \right\}   }^{  } \underbrace{ \left( q _{ ii } + \frac{ 1 }{ 2 } \sum_{ \overset{ j \neq 0  }{ \left\{ v_i , v_j \right\} \in F} }^{  }  \left( q _{
-ij } + q _{ ji }  \right) \right) }_{ =: \tilde{ c } _i }  z _{ 0i } 
+ij } + q _{ ji }  \right) \right) }_{ =: \tilde{ c } _i }  z _{ 0i } \\
+=& - \sum_{ \left\{ i,j \right\} \in E }^{  } \frac{ 1 }{ 2 } \left( q _{ ij } + q _{ ji }  \right) z _{ ij } + 
+\sum_{ i \in W \setminus \left\{ v_0 \right\}   }^{  } \tilde{ c } _i   z _{ 0i } 
 \end{align*} 
-\todo[inline]{Why does * hold?}
-The previous computation together with $  P ^{ \text{G}  }  _{ \text{BQP}  } = f \left( P ^{ \text{H}  } _{ \text{CUT}  }  \right)    $, by Theorem \ref{thm:simone}.
-\todo[inline]{Finish this proof: \\
-minimising $ xQx^T $ is the same as maximising ...}
+In $ \ast $ we use that for for all $ \left\{ i,j \right\} \in E $ we have $ i,j \neq 0  $ and $ i \neq j  $ and move the middle term to the right term.
+The previous computation shows that the two objective functions are the negation of each other under the bijection $ f $ from Theorem \ref{thm:simone}.
+This shows the result.
 \end{proof}
 
 \section{Experimental Setup} 
 The goal of our experimental study is to compare the performance of the \BH for a range of different parameters.
-We recall that 
+We recall that the \BH depends on two parameter.
+The parameter N, which determins the number of consecutive tries for improving a cut and the parameter M, which controls the number of starting points.
+We are going to compare 21 \textcolor{red}{solvers}, which are the combinations of $ M \in \left\{ 1, 5, 10, 15, 20, 30, 40, 50 \right\}  $ and $ N \in \left\{ 5, 10 , 15 \right\}  $.
+The \textcolor{red}{solvers} are run on the instances of 
 
 \section{Results} 
 The experiments gather further data that the \BH is highly effective in returning high quality approximations.
@@ -1511,9 +1517,15 @@ We point out that the \textcolor{red}{standard deviation} of the returned cut va
 The data indicates, that if a run with \textcolor{red}{big parameters, i.e. expecting longer runtime} finds a very good solution, then a high quality solution can already be
 found with small values.
 \todo[inline]{What does very good mean?}
+
+The data clearly suggests that using the \BH to generate high quality approximate solutions is highly effective.
+
 \textcolor{red}{
 Looking at this from the perspective that the optimal value is not known, the following procedure might be an informed choice: \\
-Run the \BH for very small parameters, i.e $ M = 1 $ and $ N = 5 $
+Run the \BH for very small parameters, i.e $ M = 1 $ and $ N = 5 $ and gradually increase them.
+If the approximate solution barely changes there is a good chance that it will not change for bigger parameters (within reason) either.
+Therefore we can accept the returned solution as an approximation.
+However, if there is a lot of deviation in the solutions, then the heuristic should be rerun for bigger parameters as this might lead to better solutions.
 }
 \bibliography{bibliography}
 \bibliographystyle{alpha}
