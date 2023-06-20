@@ -415,11 +415,12 @@ We emphasise that nonnegative edge weights are required.
 This requirement is essential in the proof of Lemma \ref{lem:GWalgo}.
 \begin{algorithm}
 \caption{Goemans Williamson algorithm}
+\label{alg:GWalgo} 
 \begin{algorithmic}[1]
 %\State Solve \ref{def:bqp} approximately, i.e. find a feasible solution such that \textcolor{red}{the assosiacted value is} greater or equal 0.995 times the optimal value.
 \Require A graph with nonnegative edge weights
 \Ensure A cut given by the set $ S $
-\State Find an approximately optimal solution $ X $ to \ref{def:bqp} 
+\State Find an approximately optimal solution $ X $ to \ref{def:relaxedbqp} 
 \State Find vectors $ y_1, ..., y_n \in S^d $ such that  $ y_i^Ty_j= x _{ ij }  $ for all $ i,j \in \left[ 1:n \right]  $ (using Cholesky decomposition)
 \State Choose a random point $ r \in \mathbb{S} ^{ d } $
 \State Set $ S := \left\{ i \in \left[ 1:n \right]  \mid r ^T y_i \geq 0  \right\}  $
@@ -454,12 +455,12 @@ Therefore the contribution of $ v_i $ and $ v_j $ is the greater, the closer $ \
 Geometrically this means, that diametrically opposed points have the highest contribution.
 This means that roughly speaking we want to separate diametrically opposed points.
 The cuts introduced in the next Definition achieve just that.
-\begin{Def}[Goemans-Williamson-type cut] 
-A Goemans-Williamson-type cut for a direction $ r \in \mathbb{S} ^{ n }  $ is the cut given by 
+\begin{Def}[Goemans-Williamson cut] 
+A Goemans-Williamson cut for a direction $ r \in \mathbb{S} ^{ n }  $ is the cut given by 
 $ \left( S , \overline{ S }  \right)  $, where we set $ S := \left\{ i \in \left[ 1:n \right]  \mid  v_i ^T r \geq 0  \right\}  $ and 
 $ \overline{ S }  := \left\{ i \in \left[ 1:n \right] \mid  v_i ^T r < 0  \right\} $.
 \end{Def} 
-As the algorithm is based on rounding the values according to a uniformly chosen Goemans-Williamson-type cut we are naturally interested in knowing what the odds of separating
+As the algorithm is based on rounding the values according to a uniformly chosen Goemans-Williamson cut we are naturally interested in knowing what the odds of separating
 two points are.
 \begin{lem}
 \label{lem:angle} 
@@ -468,7 +469,7 @@ The probability that $ v_i $ and $ v_j $ are separated is given by $ P \left[ v_
 \end{lem} 
 \begin{proof}
 Consider the plane that contains $ 0,v_i $ and $ v_j $, given by $ \text{span} \left( v_i, v_j \right) $.
-A hyperplane (through the origin) separates the two points if and only if its projection onto the plane is on intersect the arc connecting $ v_i, v_j $ on the sphere.
+A hyperplane (through the origin) separates the two points if and only if its projection onto the plane intersects the arc connecting $ v_i, v_j $ on the sphere.
 %\todo[inline]{Insert Picture}
 %\begin{tikzpicture}
 %\filldraw[black] (10:2cm) circle(1pt);
@@ -502,7 +503,7 @@ By $ \frac{ 2 }{ \pi  } \frac{ \pi  }{ 1 - \cos( \pi )  } =2 $ the local minimum
 
 \begin{lem}
 \label{lem:GWalgo} 
-The expected value of the weight of a Goemans-Williamson-type cut is greater or equal to $ \alpha \cdot \text{OPT}  $, where OPT denotes the value of an optimal solution to
+The expected value of the weight of a Goemans-Williamson cut is greater or equal to $ \alpha \cdot \text{OPT}  $, where OPT denotes the value of an optimal solution to
 \ref{def:relaxedbqp}.
 \end{lem} 
 \begin{proof}
@@ -511,7 +512,7 @@ Using Lemma \ref{lem:alpha} we have for all $ \theta \in \left( 0, \pi  \right] 
 \frac{ \theta }{ \pi  } \geq \alpha \frac{ 1 - \cos( \theta )  }{ 2 }  
 \end{align*} 
 We denote the weight corresponding to the edge $ \left( i,j \right)  $ by $ w _{ ij }  $ and set $ w _{ ij } = 0 $ otherwise.
-The expected value of a Goemans-Williamson-type cut is given by \\ $ \sum_{ 1 \leq i < j \leq n    }^{  } w _{ ij }  P \left[ v_i \text{ and } v_j \text{ are separated}  \right]
+The expected value of a Goemans-Williamson cut is given by \\ $ \sum_{ 1 \leq i < j \leq n    }^{  } w _{ ij }  P \left[ v_i \text{ and } v_j \text{ are separated}  \right]
 $, together with Lemma \ref{lem:angle} we can compute:
 \begin{align*}
  \sum_{ 1 \leq i < j \leq n    }^{  } w _{ ij }  P \left[ v_i \text{ and } v_j \text{ are separated}  \right]
@@ -521,7 +522,7 @@ $, together with Lemma \ref{lem:angle} we can compute:
 \end{align*} 
 \end{proof}
 \begin{rem}
-In particular Theorem \ref{lem:GWalgo} implies that there exists a Goemans-Williamson-type cut with value $ 0.8785 \cdot \text{OPT} $.
+In particular Theorem \ref{lem:GWalgo} implies that there exists a Goemans-Williamson cut with value $ 0.8785 \cdot \text{OPT} $.
 \end{rem} 
 
 Therefore we have discussed all the, for our purposes, important aspects and can state, as in \cite[Theorem 16.12]{Korte2018}:
@@ -720,6 +721,7 @@ Moreover, the cut value corresponding to $ \overline{ \theta }  $ is
 \label{eq:psiRelaxedCut} 
 \psi ( \overline{ \theta } ) = \frac{ 1 }{ 2 } \sum_{ 1 \leq i < j \leq n  }^{  } w _{ ij } \left( 1 - \cos( \overline{ \theta } _{ i } - \overline{ \theta } _{ j }  )  \right) 
 \end{align} 
+Furthermore this equation makes sense for all $ \theta \in \mathbb{R} ^{ n }  $ and we can interpret its value as a relaxed cut value.
 In the next Proposition we give a detailed account of this correspondence.
 \begin{prop}
 Modulo the uniform rotation and the periodicity for each variable, there is an one-to-one correspondence between binary cuts and angular representations
@@ -1075,7 +1077,7 @@ As $ \theta $ is not necessarily an angular representation of a cut, we need to 
 \mathbb{R} ^{ n }  $.
 Using polar coordinates we can associate the entries of $ \theta $ to points on the unit circle.
 Furthermore we can assume $ \theta_i \in \left[ 0, 2\pi \right)  $ for all $ i \in \left[ 1:n \right]  $.
-Inspired by the Goemans-Williamson-type cuts in section \ref{sec:GoemansWilliamson} we can generate a cut by cutting the unit circle into two halves. 
+Inspired by the Goemans-Williamson cuts in section \ref{sec:GoemansWilliamson} we can generate a cut by cutting the unit circle into two halves. 
 For any angle $ \alpha \in \left[ 0, \pi \right)  $ we can set
 \begin{align}
 \label{eq:assigncut} 
@@ -1105,34 +1107,39 @@ x_i = \begin{cases}
 By observing $ \left[ 0 , 2 \pi  \right) = \left[ \alpha, \alpha + \pi  \right) \cupdot \left(  \left[ 0, \alpha
 \right) \cup \left[ \alpha + \pi , 2 \pi  \right)  \right) $ we deduce $ - x ^{ \alpha } = x ^{ \alpha + \pi  }  $.
 As $ x ^{ \alpha }  $ and $ x ^{ \alpha + \pi } $ are of the same weight, it suffices to consider $ \alpha \in \left[ 0, \pi  \right) $ instead of $ \alpha \in \left[ 0 , 2 \pi  \right) $.
+\item The cut generated by assignment \ref{eq:assigncut} can also be generated by a Goemans-Williamson cut. This is achieved by simply slightly turning the diving line in the
+mathematically negative sense. Slightly means more than zero but strictly less than the smallest angle between two distinct points. As we are given a finite amount of points
+we know that such a turn exists.
 \item 
 Choosing the halfopen interval $ \left[ \alpha, \alpha + \pi  \right) $ ensures, that diametrically opposed points are separated, i.e. the corresponding vertices are on
 different sides of the cut.
-\textcolor{red}{This is a positive feature:
-We denote  $ x ^{ \text{GW}  }  $ .... and $ x ^{ \text{B}  }  $ the assignment obtained by \ref{eq:assigncut} \\
-We have $ x ^{ \text{GW}  } _{ i } \neq x ^{ \text{B}  } _{ i } $ if and only if $ \theta_i = \alpha + \pi  $
-}
-\textcolor{red}{
-Because of this we will allow ourselves the slight inaccuracy and claim that \ref{eq:assigncut} finds all the cuts. 
-It can be understood as finds all the best possible Goemans-Williamson-type cuts. 
-}
+%This tweak makes sense as diametrically opposed points have the highest contribution to the weight
+\improvement{Type out why this is good}
+%We will see that reason for this tweak is that in algorithm \ref{alg:ProcedureCUT} the angle is updated such that there is at least one $ i \in \left[ 1:n \right]  $ such that
 \end{enumerate}
 \end{rem} 
-By increasing $ \alpha $ we have a simple and computationally inexpensive way to examine all cuts obtained by assignment \ref{eq:assigncut}.
-As we will describe in algorithm \ref{alg:ProcedureCUT} we have a deterministic way of finding a best possible Goemans-Williamson-type cut. 
+By increasing $ \alpha $ we have a simple way to examine all cuts obtained by assignment \ref{eq:assigncut}, called Goemans-Williamson-type cuts.
+As we will describe in algorithm \ref{alg:ProcedureCUT} we have a deterministic and computationally inexpensive way of finding a best possible Goemans-Williamson-type cut.
+The algorithm works by rotating the separating line in the mathematically positive sense, starting with angle 0.
+In the update step the angle is set to the angle of the line that first intersects a new point on the circle, while rotating.
+If the rotated line has not encountered a new point yet it generates the same cut as the line obtained by the update step.
+Therefore the algorithm finds all possible Goemans-Williamson-type cuts.
 
 %As we are given a set of points on the unit circle, it is easy to examine all the possible cuts obtained by assignment \ref{eq:assigncut}. 
 %That is because the unit circle is one dimensional and we are able to traverse all Goemans-Williamson-type cuts by controlling only one variable.
-Thus a big difference to the algorithm in \ref{sec:GoemansWilliamson} is that we have a deterministic way of obtaining the best possible \textcolor{red}{Goemans-Williamson-type
-cut} associated to a given $ \theta $.
-\todo[inline]{Actually we do not necessarily traverse all possible Goemans-Williamson-type cut as, diametrically opposed points are always separated. \\
-However we should be able to argue that, we still find the best one, reasoning something like this: \\ 
-The vectors are diametrically opposed for a good reason, as the points solve the vector program, and they could have been chosen differently. This argument does not feel
-watertight anymore, as we do not solve the vector program optimally, but only obtain a local min. \\
-Maybe this is good enough, as we may still be able to argue, that for a given set of points the diametric opposition is optimal, if it weren't slightly moving one point could
-improve the cut. Contradiction to local minimum of $ f $.
-}
-Before we describe algorithm \ref{alg:ProcedureCUT} in detail, we will make two assumptions without loss of generality.
+
+%Thus a big difference to the algorithm in \ref{sec:GoemansWilliamson} is that we have a deterministic way of obtaining the best possible \textcolor{red}{Goemans-Williamson-type cut} associated to a given $ \theta $.
+%Thus a big difference to algorithm \ref{alg:GWalgo} is that we now have a deterministic way to find a cut. 
+%\todo[inline]{Actually we do not necessarily traverse all possible Goemans-Williamson-type cut as, diametrically opposed points are always separated. \\
+%However we should be able to argue that, we still find the best one, reasoning something like this: \\ 
+%The vectors are diametrically opposed for a good reason, as the points solve the vector program, and they could have been chosen differently. This argument does not feel
+%watertight anymore, as we do not solve the vector program optimally, but only obtain a local min. \\
+%Maybe this is good enough, as we may still be able to argue, that for a given set of points the diametric opposition is optimal, if it weren't slightly moving one point could
+%improve the cut. Contradiction to local minimum of $ f $.
+%}
+%Before we describe algorithm \ref{alg:ProcedureCUT} in detail, we will make two assumptions without loss of generality.
+
+We will make two assumptions without loss of generality. 
 First of all we note that by the $ 2\pi $-periodicity in each variable of $ f $, see \ref{prop:propertiesf} , we can assume $ \theta_i \in \left[ 0,2\pi \right)  $ for all $ i
 \in \left[ 1:n \right]  $.
 Furthermore we assume $ \theta_1 \leq \theta_2 \leq \dots \leq \theta_n  $.
@@ -1140,7 +1147,7 @@ Furthermore we assume $ \theta_1 \leq \theta_2 \leq \dots \leq \theta_n  $.
 \caption{Procedure-Cut}
 \label{alg:ProcedureCUT} 
 \begin{algorithmic}[1]
-\Require Undirected weighted graph $ G $
+\Require $ \theta \in \left[ 0, 2 \pi  \right) ^{ n }   $ satisfying $ \theta_1 \leq \theta_2 \leq \dots \leq \theta_n    $, undirected weighted graph $ G $
 \Ensure A cut $ x^* $
 \State Let $ x^* $ trivial cut, i.e. all vertices on one side
 \State Let $ \alpha =0, \Gamma = -\infty , i =1 $. Let $ j $ be the smallest index such that $ \theta_j > \pi $ if there is one; otherwise set $ j = n+1 $. Set $ \theta _{ n+1
@@ -1173,111 +1180,107 @@ x_i = \begin{cases}
 \end{cases}
 \end{align*} 
 \end{rem} 
-\begin{lem}
-\label{lem:algGeneratesAllgwtc} 
-For a given set of points $ \theta_1 \leq \dots \leq \theta_n   $ algorithm \ref{alg:ProcedureCUT} returns a Goemans-Williamson-type cut of maximum weight.
-\end{lem} 
+
+%\begin{lem}
+%\label{lem:algGeneratesAllgwtc} 
+%For a given set of points $ \theta_1 \leq \dots \leq \theta_n   $ algorithm \ref{alg:ProcedureCUT} returns a Goemans-Williamson-type cut of maximum weight.
+%\end{lem} 
+%\begin{rem}
+%Intuitively, this can be argued by slightly rotating the dividing line (through the origin) in the mathematically negative sense. 
+%Just enough so that the points with angle $ \alpha + \pi  $ are separated from the points with angle $ \alpha $.
+%But not so far, that any other points change their assignment.
+%In the following we will make this precise.
+%\end{rem} 
+%\begin{proof}[Proof of Lemma \ref{lem:algGeneratesAllgwtc}]
+%To show that the returned cut is a Goemans-Williamson-type cut, it suffices to show that for every $ \alpha \in \left[ 0, \pi  \right) $ assignment \ref{eq:assigncut} can be
+%achieved by a Goemans-Williamson-type cut. 
+%We begin by showing that th
+%Assignment \ref{eq:assigncut} states: $ x_i = 1 $ if $ \theta_i \in \left[ \alpha, \alpha + \pi  \right) $. As this is a half open interval, we need to argue that assignment \ref{eq:assigncut} can
+%be achieved by a Goemans-Williamson-type cut: \\
+%Let $ P = \left\{ i \in \left[ 1:n \right]  \mid \theta_i \in \left[ \alpha, \alpha + \pi  \right) \right\}   $, denote the indices that are assigned to $ x_i = 1 $. The
+%indices that are assigned to $ x_i = -1 $ are denoted by $ N := \left[ 1:n \right] \setminus P $.
+%We denote the smallest angle of points with indices in $ N $ to the point 
+%$ \begin{pmatrix}
+%\cos( \alpha   ) & \sin( \alpha   ) ) 
+%\end{pmatrix}  ^{ T } $, 
+%by 
+%\begin{align*}
+% \varepsilon _{ N }  := \min_{i \in N} \arccos \left( 
+%\begin{pmatrix}
+%\cos( \theta_i ) \\
+%\sin( \theta_i )  
+% \end{pmatrix} ^T 
+%\begin{pmatrix}
+%\cos( \alpha   ) \\
+%\sin( \alpha  )  
+% \end{pmatrix}  \right) 
+%\end{align*} 
+%Likewise, we denote the smallest angle of points with indices in $ P $ to the other point 
+%$ \begin{pmatrix}
+%\cos( \alpha + \pi  ) & \sin( \alpha + \pi  ) ) 
+%\end{pmatrix}  ^T $
+%, by 
+%\begin{align*}
+% \varepsilon _{ P }  := \min_{i \in P} \arccos \left( 
+%\begin{pmatrix}
+%\cos( \theta_i ) \\
+%\sin( \theta_i )  
+% \end{pmatrix} ^T 
+%\begin{pmatrix}
+%\cos( \alpha + \pi  ) \\
+%\sin( \alpha + \pi )  
+% \end{pmatrix}   \right) 
+%\end{align*} 
+%We have $ \varepsilon _{ N } , \varepsilon _{ P } >0 $, since $ \alpha \notin \left\{ \theta_i \mid i \in N \right\}  $ and $ \alpha + \pi \notin \left\{ \theta_i \mid i \in P
+%\right\}  $.
+%%More precisely, since the $ \theta_i $'s are a discrete set on the unit circle there exists a $ \varepsilon := \frac{ 1 }{ 2 } \min_{} \left\{ \alpha - \min_{ i \in N} \theta_i ,
+%%\alpha + \pi - \max_{ i \in P} \theta_i \right\} > 0 $.
+%Now we can choose $ \varepsilon \in \left( 0, \min_{} \left\{ \varepsilon _{ P } , \varepsilon _{ N }  \right\} \right) $ and consider the Goemans-Williamson-type cut generated
+%by $ \begin{pmatrix}
+%\cos( \alpha + \frac{ \pi  }{ 2 } - \varepsilon  ) &
+%\sin( \alpha + \frac{ \pi  }{ 2 } - \varepsilon  ) 
+%\end{pmatrix}  $ 
+%This leads to the cut
+%\begin{align*}
+%x ^{ \text{GW}  } _i = \begin{cases}
+%1 & \text{if } \theta_i \in \left[ \alpha - \varepsilon , \alpha + \pi - \varepsilon  \right] \\
+%-1 & \text{otherwise} 
+%\end{cases}
+%\end{align*} 
+%In case of $ \alpha - \varepsilon < 0  $, we have $ \alpha - \varepsilon > - \pi  $, the interval $ \left[ \alpha - \varepsilon , \alpha + \pi - \varepsilon  \right] $ is to
+%be understood as $ \left[ 0, \alpha - \varepsilon + \pi  \right] \cup \left[ 2 \pi + \alpha -
+%\varepsilon , 2 \pi  \right)  $.
+%We need to verify $ x = x ^{ \text{GW}  }  $. As the variable is binary it suffices to show $ x_i = 1 $ implies $ x ^{ \text{GW}  } _{ i } = 1 $. Let $ x_i = 1 $, 
+%then by construction of $ \varepsilon _{ P }  $ we have $ \theta_i \in \left[ \alpha, \alpha + \pi - \varepsilon _{ P }  \right]  $. By construction of $ \varepsilon  $, we
+%have $ \theta_i \in \left[ \alpha - \varepsilon , \alpha + \pi - \varepsilon  \right]  $ and thus $ x ^{ \text{GW}  } _{ i } = 1 $.
+%Similarly, for $ x_i = -1 $, we have $ \theta_i \in \left[ \alpha + \pi , 2 \pi \right) \cup \left[ 0 , \alpha - \varepsilon _{ N }  \right]  $ 
+%\improvement{This interval may not make sense , i.e. if $ \alpha - \varepsilon _{ N } < 0   $, in that case the interval is to be understood as $ \left[ \alpha + \pi , 2 \pi +  \alpha - \varepsilon _{ N }  \right]  $}
+%. By $ 0 < \varepsilon < \varepsilon _{ N }  $ we in particular have $ \theta_i \in \left( \alpha + \pi - \varepsilon , 2 \pi  \right) \cup \left[ 0, \alpha - \varepsilon
+%\right)  $, which shows $ x ^{ \text{GW}  } _{ i } = -1 $.
+%\todo[inline]{So far we have shown that the Goemans-Williamson-type cut between two .. cuts eval to the same \\
+%This does not show that all Goemans-Williamson-type cuts can be gen by \ref{eq:assigncut}. The ones missing are the ones where $ \theta_i = \alpha, \theta _{ j } = \alpha + \pi
+%$ are in the same set. This is not a problem if all weights are nonnegative, also the two being diametrically opposed is a better cut (as the other assignments remain
+%unchanged). However if that happens to be a negative weight the cut we don't find might be better. This is import with regard to the results as we have instances, with neg
+%weights. Also remember that GW algo assumes nonnegative weights. }
+%\end{proof}
+
 \begin{rem}
-Intuitively, this can be argued by slightly rotating the dividing line (through the origin) in the mathematically negative sense. 
-Just enough so that the points with angle $ \alpha + \pi  $ are separated from the points with angle $ \alpha $.
-But not so far, that any other points change their assignment.
-In the following we will make this precise.
+Algorithm 2 finds all Goemans-Williamson-type cuts. 
 \end{rem} 
-\begin{proof}[Proof of Lemma \ref{lem:algGeneratesAllgwtc}]
-To show that the returned cut is a Goemans-Williamson-type cut, it suffices to show that for every $ \alpha \in \left[ 0, \pi  \right) $ assignment \ref{eq:assigncut} can be
-achieved by a Goemans-Williamson-type cut. 
-We begin by showing that th
-Assignment \ref{eq:assigncut} states: $ x_i = 1 $ if $ \theta_i \in \left[ \alpha, \alpha + \pi  \right) $. As this is a half open interval, we need to argue that assignment \ref{eq:assigncut} can
-be achieved by a Goemans-Williamson-type cut: \\
-Let $ P = \left\{ i \in \left[ 1:n \right]  \mid \theta_i \in \left[ \alpha, \alpha + \pi  \right) \right\}   $, denote the indices that are assigned to $ x_i = 1 $. The
-indices that are assigned to $ x_i = -1 $ are denoted by $ N := \left[ 1:n \right] \setminus P $.
-We denote the smallest angle of points with indices in $ N $ to the point 
-$ \begin{pmatrix}
-\cos( \alpha   ) & \sin( \alpha   ) ) 
-\end{pmatrix}  ^{ T } $, 
-by 
-\begin{align*}
- \varepsilon _{ N }  := \min_{i \in N} \arccos \left( 
-\begin{pmatrix}
-\cos( \theta_i ) \\
-\sin( \theta_i )  
- \end{pmatrix} ^T 
-\begin{pmatrix}
-\cos( \alpha   ) \\
-\sin( \alpha  )  
- \end{pmatrix}  \right) 
-\end{align*} 
-Likewise, we denote the smallest angle of points with indices in $ P $ to the other point 
-$ \begin{pmatrix}
-\cos( \alpha + \pi  ) & \sin( \alpha + \pi  ) ) 
-\end{pmatrix}  ^T $
-, by 
-\begin{align*}
- \varepsilon _{ P }  := \min_{i \in P} \arccos \left( 
-\begin{pmatrix}
-\cos( \theta_i ) \\
-\sin( \theta_i )  
- \end{pmatrix} ^T 
-\begin{pmatrix}
-\cos( \alpha + \pi  ) \\
-\sin( \alpha + \pi )  
- \end{pmatrix}   \right) 
-\end{align*} 
-We have $ \varepsilon _{ N } , \varepsilon _{ P } >0 $, since $ \alpha \notin \left\{ \theta_i \mid i \in N \right\}  $ and $ \alpha + \pi \notin \left\{ \theta_i \mid i \in P
-\right\}  $.
-%More precisely, since the $ \theta_i $'s are a discrete set on the unit circle there exists a $ \varepsilon := \frac{ 1 }{ 2 } \min_{} \left\{ \alpha - \min_{ i \in N} \theta_i ,
-%\alpha + \pi - \max_{ i \in P} \theta_i \right\} > 0 $.
-Now we can choose $ \varepsilon \in \left( 0, \min_{} \left\{ \varepsilon _{ P } , \varepsilon _{ N }  \right\} \right) $ and consider the Goemans-Williamson-type cut generated
-by $ \begin{pmatrix}
-\cos( \alpha + \frac{ \pi  }{ 2 } - \varepsilon  ) &
-\sin( \alpha + \frac{ \pi  }{ 2 } - \varepsilon  ) 
-\end{pmatrix}  $ 
-This leads to the cut
-\begin{align*}
-x ^{ \text{GW}  } _i = \begin{cases}
-1 & \text{if } \theta_i \in \left[ \alpha - \varepsilon , \alpha + \pi - \varepsilon  \right] \\
--1 & \text{otherwise} 
-\end{cases}
-\end{align*} 
-In case of $ \alpha - \varepsilon < 0  $, we have $ \alpha - \varepsilon > - \pi  $, the interval $ \left[ \alpha - \varepsilon , \alpha + \pi - \varepsilon  \right] $ is to
-be understood as $ \left[ 0, \alpha - \varepsilon + \pi  \right] \cup \left[ 2 \pi + \alpha -
-\varepsilon , 2 \pi  \right)  $.
-We need to verify $ x = x ^{ \text{GW}  }  $. As the variable is binary it suffices to show $ x_i = 1 $ implies $ x ^{ \text{GW}  } _{ i } = 1 $. Let $ x_i = 1 $, 
-then by construction of $ \varepsilon _{ P }  $ we have $ \theta_i \in \left[ \alpha, \alpha + \pi - \varepsilon _{ P }  \right]  $. By construction of $ \varepsilon  $, we
-have $ \theta_i \in \left[ \alpha - \varepsilon , \alpha + \pi - \varepsilon  \right]  $ and thus $ x ^{ \text{GW}  } _{ i } = 1 $.
-Similarly, for $ x_i = -1 $, we have $ \theta_i \in \left[ \alpha + \pi , 2 \pi \right) \cup \left[ 0 , \alpha - \varepsilon _{ N }  \right]  $ 
-\improvement{This interval may not make sense , i.e. if $ \alpha - \varepsilon _{ N } < 0   $, in that case the interval is to be understood as $ \left[ \alpha + \pi , 2 \pi +  \alpha - \varepsilon _{ N }  \right]  $}
-. By $ 0 < \varepsilon < \varepsilon _{ N }  $ we in particular have $ \theta_i \in \left( \alpha + \pi - \varepsilon , 2 \pi  \right) \cup \left[ 0, \alpha - \varepsilon
-\right)  $, which shows $ x ^{ \text{GW}  } _{ i } = -1 $.
-\todo[inline]{So far we have shown that the Goemans-Williamson-type cut between two .. cuts eval to the same \\
-This does not show that all Goemans-Williamson-type cuts can be gen by \ref{eq:assigncut}. The ones missing are the ones where $ \theta_i = \alpha, \theta _{ j } = \alpha + \pi
-$ are in the same set. This is not a problem if all weights are nonnegative, also the two being diametrically opposed is a better cut (as the other assignments remain
-unchanged). However if that happens to be a negative weight the cut we don't find might be better. This is import with regard to the results as we have instances, with neg
-weights. Also remember that GW algo assumes nonnegative weights. }
-\end{proof}
 
-
-\todo[inline, caption={2do}]{We are going to go into the changes: \\
-\begin{enumerate}
-\item The cut we obtain is not probabilistic but optimal, for the distribution of points
-\item We did not solve the SDP so we are not at the global optimum
-\end{enumerate}
-}
+Recall that our rank-two relaxation has the form of the Goemans and Williamson relaxation in dimension 2 and the Goemans-Williamson-type cuts can be generated by Goemans-Williamson
+cuts.
+Hence we can analyse the performance of our algorithm in a similar manner as in section \ref{sec:GoemansWilliamson}.
 \begin{lem}
-Let $ \theta \in \mathbb{R} ^{ n }  $. Then the cut value generated by \ref{alg:ProcedureCUT} is at least 0.878 times the \textcolor{red}{relaxed cut value $ \psi (\theta) $ as defined in
-\ref{eq:psiRelaxedCut} }, written in a formula:
+Let $ \theta \in \left[ 0 , 2 \pi  \right) ^{ n }  $ such that $ \theta_1 \leq \theta_2 \leq \dots \leq \theta_n    $. Then the cut value generated by algorithm \ref{alg:ProcedureCUT} is at least 0.878 times the relaxed cut value $ \psi (\theta) $ as defined in
+\ref{eq:psiRelaxedCut}, written in a formula:
 \begin{align}
 \label{eq:perfguarantee} 
 \gamma (x^*) \geq 0.878 \psi (\theta) 
 \end{align} 
 \end{lem} 
 \begin{proof}
-\textcolor{red}{As our rank-two relaxation has the form of the Goemans and Williamson relaxation with $ d=2 $, essentially the same analysis applies.}
-\textcolor{red}{Let us quickly go over the changes: \\
-As $ f $ is nonconvex, we can not expect to find the global minimum, only a local minimum.
-This destroys the performance guarantee of the algorithm.
-Let us show how to appropriately change this: \\
-The local minimum of $ f $, say $ \theta \in \mathbb{R} ^{ n } $ represents the points 
+The entry $ \theta_i $ represents the point
 $
 v_i =
 \begin{pmatrix}
@@ -1285,16 +1288,51 @@ v_i =
 \sin( \theta_i ) 
 \end{pmatrix} ^{ T }  
 $ for $ i \in \left[ 1:n \right]  $.
-As all these points are on the unit circle, $ v_1 , \dots, v_n $ are a feasible solution to \ref{def:relaxedbqp} and their value of the objective function is given by ...
-\todo[inline]{CONTINUE}.
-This is closely linked with the fact that we do not solve the \SDP.
-On the other hand, since we fixed $ n = 2 $, we have a methodical and efficient way to find the cut values of all possible Goemans-Williamson-type cut, see
-\ref{lem:algGeneratesAllgwtc}.
-}
+We review the probabilities that two points $ v_i $ and $ v_j $ are separated by a Goemans-Williamson-type cut, for any $ i,j \in \left[ 1:n \right]  $. 
+In dimension 2, we say that a Goemans-Williamson cut is of angle $ \beta $, if it is generated by 
+$ r = \begin{pmatrix}
+\cos( \beta + \frac{ \pi  }{ 2 }  ) & \sin( \beta + \frac{ \pi  }{ 2 }  )
+\end{pmatrix}  $.
+A Goemans-Williamson cut of angle $ \beta $ induces the cut
+\begin{align*}
+x_i = 
+\begin{cases}
+1 & \theta_i \in \left[ \beta , \beta + \pi  \right] \\
+-1 & \text{otherwise} 
+\end{cases}
+\end{align*} 
+Clearly, if two points are separated by a Goemans-Williamson cut they are also separated by a Goemans-Williamson-type cut. 
+Thus for an angle $ \beta $ the points $ v_i $ and $ v_j $ are separated by a Goemans-Williamson-type cut but not a Goemans-Williamson cut if and only if $ \beta = \theta_i - \frac{ \pi  }{ 2 }  $ or $ \beta =
+\theta_j -
+\frac{ \pi  }{ 2 }  $.
+Since the set of separating angles only changes on a nullset the probabilities remain unchagned.
+Therefore we can redo the proof of Lemma \ref{lem:GWalgo} by substituting Goemans-Williamson cut for Goemans-Williamson-type cut and OPT for $ \psi ( \theta) $.
+This yields that the expected value of a Goemans-Williamson-type cut for a given $ \theta $ is greater or equal to $ \alpha \psi ( \theta)$. 
+Since algorithm \ref{alg:ProcedureCUT} finds all Goemans-Williamson-type cuts it finds a Goemans-Williamson-type cut of value greater or equal to $ \alpha \psi ( \theta) $.
+%Therefore we can apply the same analysis as in section \ref{sec:GoemansWilliamson} yielding the 
+%If $ v_i $ and $ v_j $ are diametrically opposed they are by construction always seperated, therefore the probability is 1. This matches the probability assigned in Lemma
+%\ref{lem:angle}.
+%If $ v_i $ and $ v_j $ are not diametrically opposed the assignement of 
+%As $ \theta $ is not necessarily a optimum solution to \BQP \ref{def:relaxedbqp} we have to bound with $ \psi ( \theta) $ instead of the optimum value.
+
+%\textcolor{red}{Let us quickly go over the changes: \\
+%As $ f $ is nonconvex, we can not expect to find the global minimum, only a local minimum.
+%This destroys the performance guarantee of the algorithm.
+%Let us show how to appropriately change this: \\
+%The local minimum of $ f $, say $ \theta \in \mathbb{R} ^{ n } $ represents the points 
+%$
+%v_i =
+%\begin{pmatrix}
+%\cos( \theta_i ) &
+%\sin( \theta_i ) 
+%\end{pmatrix} ^{ T }  
+%$ for $ i \in \left[ 1:n \right]  $.
+%As all these points are on the unit circle, $ v_1 , \dots, v_n $ are a feasible solution to \ref{def:relaxedbqp} and their value of the objective function is given by ...
+%\todo[inline]{CONTINUE}.
+%}
 \end{proof}
 This is not a performance guarantee, as we can not guarantee that $ \psi ( \theta)  $ is an upper bound on the maximum cut value.
-\textcolor{red}{Recall, that in Goemans-Williamson algorithm, the guarantee comes from solving the \textcolor{red}{vector program}}
-\improvement{Vector Program not yet introduced} 
+Recall, that in Goemans-Williamson algorithm, the guarantee comes from (approximately) solving the \SDP \ref{def:relaxedsdp}.
 The next Lemma can be interpreted as a weak performance guarantee
 \begin{lem}
 Let $ x ^{*} _{ a } $ and $ x ^{*} _{ b } $ be two cuts generated by algorithm \ref{alg:ProcedureCUT} from $ \theta_a $ and $ \theta_b $ respectively.
@@ -1309,10 +1347,10 @@ Using the assumptions we confirm
 \end{proof}
 The next paragraph, describes the idea of algorithm \ref{alg:improvedCut}.
 We minimise the function $ f $ and obtain a minimiser called $ \theta^1 $. 
-We can now start \ref{alg:ProcedureCUT} and obtain a best possible cut $ x^1 $ associated with $ \theta^1 $.
-At this point we can return the cut $ x^1 $.
+We can now start algorithm \ref{alg:ProcedureCUT} and obtain a best possible cut $ x^1 $ associated with $ \theta^1 $.
+At this point we could return the cut $ x^1 $.
 If $ \theta^1 $ happens to be an angular representation of a cut we know that $ x^1 $ is a maximum cut, by Theorem \ref{thm:classificationcuts}.
-Otherwise, we can continue to try and improve the cut value by spending more computational resources. 
+Otherwise, we can attempt to improve the cut value by spending more computational resources. 
 By Theorem \ref{thm:classificationcuts} we know that the angular representation of $ x^1 $, denoted as $ \theta ( x^1)  $, is a stationary point of $ f $, most likely a
 saddle point. 
 Therefore we can hope to find a deeper local minimum close to $ \theta ( x^1) $.
@@ -1326,7 +1364,7 @@ We can set the termination criterion to be $ N $ consecutive unsuccessful attemp
 \todo[inline]{Find a better name}
 \label{alg:improvedCut} 
 \begin{algorithmic}[1]
-\Require Undirected weighted graph $ G $
+\Require Integer $ N \in \mathbb{N}  $, a seed $ \theta^0 \in \mathbb{R} ^{ n }  $, undirected weighted graph $ G $
 \Ensure A cut $ x^* $
 \Procedure{\ImprovedCut}{input $ N, \theta^0 $}
 \State Given $ \theta^0 \in \mathbb{R} ^{ n }  $ and integer $ N \geq 0  $, let $ k=0 $ and $ \Gamma = - \infty  $
@@ -1345,18 +1383,9 @@ We can set the termination criterion to be $ N $ consecutive unsuccessful attemp
 \end{algorithmic}
 \end{algorithm}
 
-In \ref{alg:improvedCut} we have $ \theta^0 $ as input, which is the initial seed for the minimisation of $ f $. We can try and improve our chances of finding a high quality
-heuristic solution by running \ref{alg:improvedCut} multiple times, in other words increase the number of seeds. The number of seeds, will be given by the input M.
-\improvement{Write how increasing M and N usually leads to better solutions but the runtime can not be vorhergesagt. Also there can be lucky punches, say start at the angular
-representation of a cut.}
+In algorithm \ref{alg:improvedCut} we have $ \theta^0 $ as input, which is the initial seed for the minimisation of $ f $. We can try and improve our chances of finding a high quality
+heuristic solution by running algorithm \ref{alg:improvedCut} from different starting points, in other words increase the number of seeds. The number of seeds, will be given by the input M.
 
-The algorithm \ref{alg:improvedCut}, can also be interpreted in the following way.
-\improvement{We assume that we do not find the optimum cut.}
-From a seed we start minimising $ f $. By means of Goemans-Williamson-type cuts, we look for nearby saddle points. 
-\textcolor{red}{Here it is important to note, that nearby is to be understood by the cuts that we can generate from the minimum. The so found saddle points is not necessarily
-the closest saddle point in the euclidean metric.}
-The saddle point is chosen by the associated cut with the highest weight.
-From a slight perturbation of that point we search for a local minimum, which has a saddle point with lower $ f $-value in its neighbourhood.
 \begin{algorithm}
 \caption{BurerStub}
 \label{alg:BurerStub} 
@@ -1367,7 +1396,7 @@ From a slight perturbation of that point we search for a local minimum, which ha
 \State Let $ x^* $ trivial cut, i.e. all vertices on one side
 \For{ $ i \gets 0,n $}
   \State Generate random $ \theta^0 \in \mathbb{R} ^{ n } $ 
-  \State $ x \gets \Call{\ImprovedCut} $
+  \State $ x \gets \Call{\ImprovedCut}{N, \theta^0} $
   \If{ $ \gamma(x) > \gamma(x^*) $} 
     \State $ x^* \gets x $
   \EndIf
@@ -1376,9 +1405,17 @@ From a slight perturbation of that point we search for a local minimum, which ha
 \end{algorithmic}
 \end{algorithm}
 \todo[inline]{reference of algorithms does not work! fix in whole file!}
+Assuming that we do not find a maximum cut, algorithm \ref{alg:improvedCut} can also be interpreted in the following way.
+From a seed we start minimising $ f $. By means of Goemans-Williamson-type cuts, we look for nearby saddle points. 
+Here it is important to note, that nearby is to be understood by the cuts that we can generate from the minimum. The so found saddle points is not necessarily
+the closest saddle point in the euclidean metric.
+The saddle point is chosen by the associated cut with the highest weight.
+From a slight perturbation of that point we search for a local minimum, which has a saddle point with lower $ f $-value in its neighbourhood.
+
 Generally speaking the bigger $ M $ and $ N $ are the longer the algorithm will run and the better the returned cut will be.
-However as the termination criterion in \textcolor{red}{IMPROVEDCUT} relies on the number of unsuccessful attempts there can always be exceptions.
-We will investigate the performance of the heuristic for a set of different choices for $ M $ and $ N $.
+However as the termination criterion in \textcolor{red}{IMPROVEDCUT} relies on the number of unsuccessful attempts we can not predict the runtime.
+Since there are elements of randomness, namely in the choice of the seed and the random pertubation there can always be exceptions to the rule.
+%We will investigate the performance of the heuristic for a set of different choices for $ M $ and $ N $.
 \newpage
 \section{Solving \BQP using \MCP} 
 \label{BQP2MC} 
