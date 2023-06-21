@@ -55,6 +55,7 @@
 \newcommandx{\ImprovedCut}{ImprovedCut\xspace}
 \newcommandx{\BH}{Burer heuristic\xspace}
 \newcommandx{\MallachLibrary}{ \cite{MallachLibrary}\xspace}
+\newcommandx{\GWconst}{0.878\xspace}
 
 
 \geometry{right=2cm, left=2.5cm, top=2cm}
@@ -84,18 +85,21 @@
 \tableofcontents
 
 \section{Introduction} 
-Thorughout this text we consider the \mcp, which is shown to be NP-hard by \cite{Garey1974}
+Throughout this text we consider the \mcp, which is shown to be NP-hard by \cite{Garey1974}.
 To tackle this problem approximation algorithms and heuristic algorithms have been proposed.
+We will develop the theory for the heuristic presented by Burer, Monteiro and Zhang in \cite{Burer2002}, which we will call \BH. 
 
-The text divides into conceptual parts: The first part can be considered the theoretical part, in which we try to give to develop \textcolor{red}{just enough }
-We begin by introducing a semidefinite relaxation for the maximum cut problem.
+The text divides into two conceptual parts: The first part can be considered the theoretical part, in which we try to develop the theory behind the \BH.
+The second part is where we present the experminental results.
+%We begin by introducing a semidefinite relaxation for the maximum cut problem.
 
-In section \ref{sec:GoemansWilliamson}, we give an overview of the approximation algorithm \textcolor{red}{introduced by} Goemans and Williamson. 
+In section \ref{sec:GoemansWilliamson}, we give an overview of an approximation algorithm proposed by Goemans and Williamson. 
+This will be the basis for the \BH.
 That includes introducing a \sdp relaxation for the \mcp and showing how to derive a cut from a set of points on the unit sphere.
 We will discuss the performance guarantee in detail. 
 However, the proof of polynomial runtime will not be treated here, we refer to \cite{Korte2018}.
 
-In section \ref{rankTworelaxation}, we lay the theoretical foundation for the \BH (described in section \ref{burerHeuristic}).
+In section \ref{rankTworelaxation}, we lay the theoretical foundation for the \BH (described in section \ref{sec:BurerHeuristic}).
 In particular we study the special case of the \textcolor{red}{SDP} relaxation introduced in section \ref{sec:GoemansWilliamson} for dimension two in polar coordinates.
 This leads to an unconstrained nonconvex optimisation problem, which has advantages and disadvantages.
 %This includes giving a rank-two relaxation in polar coordinates, which leads to an unconstrained nonconvex optimisation problem. 
@@ -106,7 +110,7 @@ However as the function is nonconvex, we can not expect to solve this relaxation
 Therefore we face a trade-off between computational runtime and a theoretical guarantee, see \cite[p. 506]{Burer2002}.
 We will conduct experiments on \textcolor{red}{Mallach instance library} to investigate this trade-off. This yields data demonstrating the effectiveness.
 
-In section \ref{burerHeuristic} we give a detailed exposition of the \BH.
+In section \ref{sec:BurerHeuristic} we give a detailed exposition of the \BH.
 \textcolor{red}{The heuristic combines the rank-two relaxation and Goemans-Williamson-type cuts.} 
 Given a set of points on the unit circle, we will provide a complete description of how to generate a best possible Goemans-Williamson-type cut in a deterministic manner. 
 Furthermore we will describe an algorithm to improve a cut value by means of trial and error, where the termination criterion is given by the number of consecutive unsuccessful
@@ -114,7 +118,7 @@ attempts to improve the cut value.
 Lastly we will end the section with algorithm of the \BH.
 This is the algorithm on which the experimental data is based upon.
 
-In section \ref{BQP2MC} we show that instances of the binary quadratic programming problem can be transformed to instances of the maximum cut problem.
+In section \ref{sec:BQP2MC} we show that instances of the binary quadratic programming problem can be transformed to instances of the maximum cut problem.
 
 In the \textcolor{red}{second part} we will go into computational results.
 We implemented the heuristic \textcolor{red}{(distillation from ..)} and ran it on the instance library provided by \textcolor{red}{Mallach.}
@@ -1065,10 +1069,10 @@ Let $ x \in \left\{ 0,1 \right\} ^{ n } $ be a nonmaximum cut. Then $ \theta ( x
 The statement is the contraposition of the first statement in Theorem \ref{thm:classificationcuts} 
 \end{proof}
 Therefore, as written in \cite[p.509]{Burer2002}, a good minimisation algorithm would not be attracted to stationary points which are not local minima. 
-We construct such an algorithm in section \ref{burerHeuristic}.
+We construct such an algorithm in section \ref{sec:BurerHeuristic}.
 \newpage
 \section{A heuristic algorithm for \MCP} 
-\label{burerHeuristic} 
+\label{sec:BurerHeuristic} 
 In this section we will describe the heuristic described by \cite{Burer2002}.
 Again we assume nonnegative edge weights, in order to mirror the analysis done in \ref{sec:GoemansWilliamson}.
 
@@ -1418,7 +1422,7 @@ Since there are elements of randomness, namely in the choice of the seed and the
 %We will investigate the performance of the heuristic for a set of different choices for $ M $ and $ N $.
 \newpage
 \section{Solving \BQP using \MCP} 
-\label{BQP2MC} 
+\label{sec:BQP2MC} 
 Closely following \cite[Section 2]{Mallach2021} we are going to give a cursory explanation, that binary quadratic problems of the form:
 Let $ Q \in \mathbb{R} ^{ n \times n }  $
 \begin{mini}
@@ -1532,16 +1536,75 @@ The previous computation shows that the two objective functions are the negation
 This shows the result.
 \end{proof}
 
-\section{Experimental Setup} 
+\section{Experimentation}
+\subsection{Experimental Setup} 
 The goal of our experimental study is to compare the performance of the \BH for a range of different parameters.
-We recall that the \BH depends on two parameter.
+We recall that the \BH depends on two parameter:
 The parameter N, which determins the number of consecutive tries for improving a cut and the parameter M, which controls the number of starting points.
 We are going to compare 21 \textcolor{red}{solvers}, which are the combinations of $ M \in \left\{ 1, 5, 10, 15, 20, 30, 40, 50 \right\}  $ and $ N \in \left\{ 5, 10 , 15 \right\}  $.
-The \textcolor{red}{solvers} are run on the instances of 
+As these parameters are characteristic we have the following naming convention:
+The solver with the name Mxx.Nyy is the \BH with M=xx and N=yy.
+The \textcolor{red}{solvers} are run on the instances from \MallachLibrary.
+We will give a broad overview of the library for a detailed description we refer to \cite{MallachLibrary}.
+The library comprises 431 instances, split into 8 classes.
+The number of vertices ranges from 21 to 3000 with a median of $ 101 $ and a mean of 394.69 vertices.
+\textcolor{red}{There are sparse and dense graphs, (though most graphs are sparse?)}
+For 
 
-\section{Results} 
+We will distinguish between instances for which the optimal value is known and those for which the optimal value is not known.
+In the analysis we will consider three indicators for a given instance.
+The smallest and biggest returned cut value over the 21 solvers.
+Lastly we will investigate the standard deviation, which indicates how sensitive the heuristic is to different choices of parameters.
+
+\subsection{Instances with known optimal value} 
+There are 332 instances with known optimum value.
+Out of those 146 instances are solved optimally by each of the 21 solvers. 
+\improvement{These instances are deemed not interesting}
+Furthermore there are 154 instances for which at least one of the solvers but not all finds the optimal value.
+\improvement{Analyse these}
+Lastly there are 32 instances for which none of the 21 solvers finds the optimal value.
+For these instances we first take a look at the highest returned cut value ratio over all the solvers.
+Doing this wee see that there are only two instances namely gka10b 0.863636 and gka9b with 0.875912 for with the maximal ratio is less than \GWconst.
+Other than those every other instance reaches a maximal ratio of greater than 0.99.
+Regarding the minimum the same phenomen occurs.
+For the two instances gka10b and gka9b the minimal ratios are 0.000000 and 0.277372 respectively.
+For the other instance the minmal ratio is greater than 0.97 exceeding \GWconst.
+This means that for 30 out of those 32 instances every solver returns a solution satisfying the performance guarantee of the Goemans-Williamson algorithm, although there is no
+theoretical guarantee to do so for the \BH, see section \ref{sec:BurerHeuristic}.
+For the standard deviations \textcolor{red}{we have much of the same.}
+The standard deviation for gka9b and gka10b is with 0.331967 and 0.154788 respectively orders of magnitude larger than for the rest which have stadard deviation less or equal
+to 0.004201.
+
+%Therefore we conclude from our analysis, except for the instances gka9b and gka10b the returned value of the solver funnels towards a very high quality solution for increasing
+%parameters
+
+%Out of the instances with known optimum value the performance on the instance gka10b is especially interesting.
+We will take a deeper look at the instances gka9b and gka10b, starting with gka9b:
+\todo[inline]{Add plot}
+First of all we notice that the quality of the returned cut strongly varies and that it keeps oscilating even for big parameters.
+This is very interesting as usually the quality of the solution funnels towards high quality solutions for increasing parameters.
+Furthermore for 5 solvers the returned cut has the value of the trivial cut.
+Notably 4 out of those 5 solvers have $ N = 5 $.
+
+We observe that both instances gka9b and gka10b arose by transformation from a \BQP to \MCP.
+The transformed graphs are dense with density 1 and the maximum cut values are within the order of magnitude of the edge weights, except for the edges connected to the sun
+vertex.
+It needs to be mentioned, that the absolute value of the edges connected to the sun vertex have a much higher weight, this stems from the transforming the \BQP to a \MCP.
+However, the instances gka*b with $ ^{ * }  \in \left[ 1:8 \right]  $ the same characteristics hold true but their performance is much better.
+\todo[inline]{Analyse gka*b instances}
+Another explanation might be that the 
+Therefore the previous observations can not be a thorough explanation of the performance.
+
+\subsection{Instances without known optimal value} 
+
+Although there is no optimal value we are still interested in the quality of a solution as a ratio.
+For each instance we therefore normalise the returned values by dividing by the maximal returned value.
+By construction the values will be between 0 and 1 with at least one value being 1.
+Performing a similar analysis as above
+
+\subsection{Results} 
 The experiments gather further data that the \BH is highly effective in returning high quality approximations.
-Out of the \textcolor{red}{421} test instances with known optimum value, the instances for which the heuristic \textcolor{red}{returns a cut with ratio less than 0.878 (the
+Out of the 332 test instances with known optimum value, the instances for which the heuristic \textcolor{red}{returns a cut with ratio less than 0.878 (the
 performance guarantee in Goemans Williamson) } are so few we can name them here. They are
 \textcolor{red}{name the instances}
 In particular the heuristic return high quality cuts for instances with mixed sign weight, these are
@@ -1564,6 +1627,7 @@ If the approximate solution barely changes there is a good chance that it will n
 Therefore we can accept the returned solution as an approximation.
 However, if there is a lot of deviation in the solutions, then the heuristic should be rerun for bigger parameters as this might lead to better solutions.
 }
+
 \bibliography{bibliography}
 \bibliographystyle{alpha}
 \listoftodos[Notes]
