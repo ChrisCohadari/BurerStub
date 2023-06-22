@@ -1541,20 +1541,24 @@ This shows the result.
 The goal of our experimental study is to compare the performance of the \BH for a range of different parameters.
 We recall that the \BH depends on two parameter:
 The parameter N, which determins the number of consecutive tries for improving a cut and the parameter M, which controls the number of starting points.
-We are going to compare 21 \textcolor{red}{solvers}, which are the combinations of $ M \in \left\{ 1, 5, 10, 15, 20, 30, 40, 50 \right\}  $ and $ N \in \left\{ 5, 10 , 15 \right\}  $.
+We are going to compare 21 solvers, which are the combinations of $ M \in \left\{ 1, 5, 10, 15, 20, 30, 40, 50 \right\}  $ and $ N \in \left\{ 5, 10 , 15 \right\}  $.
 As these parameters are characteristic we have the following naming convention:
 The solver with the name Mxx.Nyy is the \BH with M=xx and N=yy.
-The \textcolor{red}{solvers} are run on the instances from \MallachLibrary.
+The solvers are run on the instances from \MallachLibrary.
 We will give a broad overview of the library for a detailed description we refer to \cite{MallachLibrary}.
 The library comprises 431 instances, split into 8 classes.
-The number of vertices ranges from 21 to 3000 with a median of $ 101 $ and a mean of 394.69 vertices.
-\textcolor{red}{There are sparse and dense graphs, (though most graphs are sparse?)}
-For 
+The number of vertices ranges from 21 to 3000 with 25\% of the instances having 100 or less vertices, 50\% having 121 or less vertices and 75\% having 251 vertices.
+The densities range from 0.00133377792597533 to 1 with 24\% of the instances having density 0.1 or less, 50\% having density 0.302885572139304 or less and 75\% having density
+0.793995584988963 or less.
+Thus we have a range of different sized graphs from low density to high density.
+The runtime of the solvers is measured in the number of generated cuts, as this metric is system independent.
 
 We will distinguish between instances for which the optimal value is known and those for which the optimal value is not known.
 In the analysis we will consider three indicators for a given instance.
 The smallest and biggest returned cut value over the 21 solvers.
 Lastly we will investigate the standard deviation, which indicates how sensitive the heuristic is to different choices of parameters.
+
+The goal is to investigate the overall performance and find out for which parameters the \BH works best.
 
 \subsection{Instances with known optimal value} 
 There are 332 instances with known optimum value.
@@ -1597,10 +1601,14 @@ Therefore the previous observations can not be a thorough explanation of the per
 
 \subsection{Instances without known optimal value} 
 
+In this subsection we are going to consider the instances, where there is no known optimal value, i.e. the library \cite{MallachLibrary} does not provide one.
 Although there is no optimal value we are still interested in the quality of a solution as a ratio.
 For each instance we therefore normalise the returned values by dividing by the maximal returned value.
 By construction the values will be between 0 and 1 with at least one value being 1.
-Performing a similar analysis as above
+Looking at the smallest cut ratio of each instance we see that every instance has a ratio greater than 0.973214.
+Considering the largest standard deviation between the ratios returned for each solver we see that the standard deviation is less or equal to 0.006403. 
+For these observations we deduce that for the instances without known optimum value the \BH is very robust. 
+By robust we mean that the quality of the returned cut is not very sensitive to the choice of parameters.
 
 \subsection{Results} 
 The experiments gather further data that the \BH is highly effective in returning high quality approximations.
