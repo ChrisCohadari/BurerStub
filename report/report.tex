@@ -87,20 +87,22 @@
 \section{Introduction} 
 Throughout this text we consider the \mcp, which is shown to be NP-hard by \cite{Garey1974}.
 To tackle this problem approximation algorithms and heuristic algorithms have been proposed.
+For a long time the best known approximation algorithm had an approximation factor of 0.5, until 1995, when Goemans and Williamson proposed an approximation
+algorithm with approximation factor 0.878 in \cite{GoemansWilliamson1995}, see \cite[p. 420]{Korte2018}.
+Their approach is based on relaxing the \mcp to a semidefinite program (\SDP), solving the \SDP and rounding the obtained solution to a cut.
+Seven years later, Burer, Monteiro and Zhang published a very effective heuristic based on the rounding technique proposed by Goemans and Williamson but without having to
+solve a \SDP.
 We will develop the theory for the heuristic presented by Burer, Monteiro and Zhang in \cite{Burer2002}, which we will call \BH. 
-
-The text divides into two conceptual parts: The first part can be considered the theoretical part, in which we try to develop the theory behind the \BH.
-The second part is where we present the experimental results.
-%We begin by introducing a semidefinite relaxation for the maximum cut problem.
+Furthermore we will present the computational results of running the \BH on the instances of the library \cite{MallachLibrary}.
 
 In section \ref{sec:GoemansWilliamson}, we give an overview of an approximation algorithm proposed by Goemans and Williamson. 
 This will be the basis for the \BH.
 That includes introducing a \sdp relaxation for the \mcp and showing how to derive a cut from a set of points on the unit sphere.
 We will discuss the performance guarantee in detail. 
-However, the proof of polynomial runtime will not be treated here, we refer to \cite{Korte2018}.
+However, the proof of polynomial runtime will not be treated here and we kindly refer to \cite{Korte2018}.
 
-In section \ref{rankTworelaxation}, we lay the theoretical foundation for the \BH (described in section \ref{sec:BurerHeuristic}).
-In particular we study the special case of the \textcolor{red}{SDP} relaxation introduced in section \ref{sec:GoemansWilliamson} for dimension two in polar coordinates.
+In section \ref{rankTworelaxation}, we lay the theoretical foundation for the \BH. %(described in section \ref{sec:BurerHeuristic}).
+In particular we study the rank-two relaxation, which is a special case of the \SDP relaxation introduced in section \ref{sec:GoemansWilliamson} for dimension two in polar coordinates.
 This leads to an unconstrained nonconvex optimisation problem, which has advantages and disadvantages.
 %This includes giving a rank-two relaxation in polar coordinates, which leads to an unconstrained nonconvex optimisation problem. 
 On the upside by using this relaxation the number of variables is not increased, 
@@ -108,23 +110,30 @@ i.e. the number of variables remains the number of vertices of the graph.
 This implies good scalability to large instances.
 However as the function is nonconvex, we can not expect to solve this relaxation optimally.
 Therefore we face a trade-off between computational runtime and a theoretical guarantee, see \cite[p. 506]{Burer2002}.
-We will conduct experiments on \textcolor{red}{Mallach instance library} to investigate this trade-off. This yields data demonstrating the effectiveness.
+\improvement{Improve this sentence}
+We will conduct experiments on the library \cite{MallachLibrary} asserting the effectiveness in section \ref{sec:expermints}. %to investigate this trade-off. This yields data demonstrating the effectiveness.
 
 In section \ref{sec:BurerHeuristic} we give a detailed exposition of the \BH.
-\textcolor{red}{The heuristic combines the rank-two relaxation and Goemans-Williamson-type cuts.} 
+The heuristic combines the rank-two relaxation and Goemans-Williamson-type cuts. 
 Given a set of points on the unit circle, we will provide a complete description of how to generate a best possible Goemans-Williamson-type cut in a deterministic manner. 
 Furthermore we will describe an algorithm to improve a cut value by means of trial and error, where the termination criterion is given by the number of consecutive unsuccessful
 attempts to improve the cut value.
-Lastly we will end the section with algorithm of the \BH.
-This is the algorithm on which the experimental data is based upon.
+Lastly we will end the section with the \BH.
+This is the algorithm on which the experimental data is based upon and it depends on two parameters $ M $ and $ N $. The parameter $ M $ can be thought of as the number of
+seeds, i.e. the number of points to optimise from. The parameter $ N $ controls the number of consecutive tries of improving the cut value from a given starting point.
 
 In section \ref{sec:BQP2MC} we show that instances of the binary quadratic programming problem can be transformed to instances of the maximum cut problem.
+Thus this section shows how to provide heuristic solutions to instances of the \BQP.
+The importance of this section stems from library \cite{MallachLibrary} containing \BQP instances, which we will solve by running the \BH on the corresponding \MCP graph.
 
-In the \textcolor{red}{second part} we will go into computational results.
-We implemented the heuristic \textcolor{red}{(distillation from ..)} and ran it on the instance library provided by \textcolor{red}{Mallach.}
-The \textcolor{red}{results} described in \textcolor{red}{section}, gather more evidence, that the rank-two relaxation \textcolor{red}{proposed } by \textcolor{red}{Burer et
-al.} is highly effective.
-In the \textcolor{red}{results part} we will 
+Finally in section \ref{sec:expermints} we will present the results of running the \BH on the library \cite{MallachLibrary} for the 21 possible choices of $ M \in
+\left\{ 1, 5, 10, 15, 20, 30, 40, 50 \right\}  $ and $ N \in \left\{ 5, 10 , 15 \right\}  $.
+
+%In the \textcolor{red}{second part} we will go into computational results.
+%We implemented the heuristic \textcolor{red}{(distillation from ..)} and ran it on the instance library provided by \textcolor{red}{Mallach.}
+%The \textcolor{red}{results} described in \textcolor{red}{section}, gather more evidence, that the rank-two relaxation \textcolor{red}{proposed } by \textcolor{red}{Burer et
+%al.} is highly effective.
+%In the \textcolor{red}{results part} we will 
 \newpage
 
 \section{A semidefinite relaxation for the Max cut problem} 
@@ -1401,7 +1410,7 @@ In algorithm \ref{alg:improvedCut} we have $ \theta^0 $ as input, which is the i
 heuristic solution by running algorithm \ref{alg:improvedCut} from different starting points, in other words increase the number of seeds. The number of seeds, will be given by the input M.
 
 \begin{algorithm}
-\caption{BurerStub}
+\caption{Burer heuristic}
 \label{alg:BurerStub} 
 \begin{algorithmic}[1]
 \Require Undirected weighted graph $ G $, number of seeds $ M $, number of consecutive tries $ N $
@@ -1513,6 +1522,7 @@ As we can see the vertex $ v_0 $ has a special role as it is connected to all ot
 The vertex $ v_0 $ is also called the sun vertex.
 
 \section{Experimentation}
+\label{sec:expermints} 
 \subsection{Experimental Setup} 
 The goal of our experimental study is to compare the performance of the \BH for a range of different parameters.
 We recall that the \BH depends on two parameter:
@@ -1523,45 +1533,71 @@ The solver with the name Mxx.Nyy is the \BH with M=xx and N=yy.
 The solvers are run on the instances from \MallachLibrary.
 We will give a broad overview of the library for a detailed description we refer to \cite{MallachLibrary}.
 The library comprises 431 instances, split into 8 classes.
-The number of vertices ranges from 21 to 3000 with 25\% of the instances having 100 or less vertices, 50\% having 121 or less vertices and 75\% having 251 vertices.
-The densities range from 0.00133377792597533 to 1 with 24\% of the instances having density 0.1 or less, 50\% having density 0.302885572139304 or less and 75\% having density
-0.793995584988963 or less.
+The number of vertices ranges from 21 to 3000 with 25\% of the instances having 100 or fewer vertices, 50\% having 121 or fewer vertices and 75\% having 251 or fewer vertices.
+The (rounded) densities range from 0.001 to 1 with 25\% of the instances having density 0.1 or less, 50\% having density 0.3 or less and 75\% having density 0.8 or less.
 Thus we have a range of different sized graphs from low density to high density.
 The runtime of the solvers is measured in the number of generated cuts, as this metric is system independent.
 
 We will distinguish between instances for which the optimal value is known and those for which the optimal value is not known.
+Since we are interested in the approximation ratio the returned cut values are divided by the optimal value.
+For the instances without known optimum value, we normalise by the largest returned cut, see subsection \ref{ssec:UnknownOptVal}.
 In the analysis we will consider three indicators for a given instance.
 The smallest and biggest returned cut value over the 21 solvers.
 Lastly we will investigate the standard deviation, which indicates how sensitive the heuristic is to different choices of parameters.
 
 The goal is to investigate the overall performance and find out for which parameters the \BH works best.
+Measuring the number of produced cuts will help us in weighting out the benefit of improved solutions versus the increased runtime for bigger parameters.
 
 \subsection{Instances with known optimal value} 
 \label{ssec:knownOptVal} 
+We are going to investigate the data identifying instances, for which the \BH performs the worst and take a detailed look at those in subsection \ref{ssec:gkaib}.
+
 There are 332 instances with known optimum value.
 Out of those 146 instances are solved optimally by each of the 21 solvers. 
-\improvement{These instances are deemed not interesting}
+\improvement{It could be interesting to have a count of all the solvers that reached the optimal value for different choices of parameters}
+
 Furthermore there are 154 instances for which at least one of the solvers but not all finds the optimal value.
+Out of these instances for all but 6, every solver achieves an approximation ratio, or simply ratio, of at least 0.975207.
+The 6 instances that do not are of the form gka*b for $ ^{ * } \in \left[ 3:8 \right]   $. Their worst case performance ranges from 0.248276 to 0.847458 and the standard
+deviations range from 0.059270 to 0.166898.
+Again excluding those instances the standard deviation of each instance decreases considerably to less or equal to 0.006419.
 \improvement{Analyse these}
+
 Lastly there are 32 instances for which none of the 21 solvers finds the optimal value.
-For these instances we first take a look at the highest returned cut value ratio over all the solvers.
-Doing this wee see that there are only two instances namely gka10b 0.863636 and gka9b with 0.875912 for with the maximal ratio is less than \GWconst.
-Other than those every other instance reaches a maximal ratio of greater than 0.99.
+For these instances we first take a look at the highest achieved ratio over all the solvers.
+Doing this, we see that there are only two instances namely gka10b with 0.863636 and gka9b with 0.875912 for which the highest ratio is less than \GWconst.
+Other than those every other instance reaches a highest ratio of greater than 0.99.
 Regarding the minimum the same phenomenon occurs.
-For the two instances gka10b and gka9b the minimal ratios are 0.000000 and 0.277372 respectively.
-For the other instance the minimal ratio is greater than 0.97 exceeding \GWconst.
+For the two instances gka10b and gka9b the lowest ratios are 0.000000 and 0.277372 respectively.
+For the other instance the lowest ratio is greater than 0.97 exceeding \GWconst.
 This means that for 30 out of those 32 instances every solver returns a solution satisfying the performance guarantee of the Goemans-Williamson algorithm, although there is no
 theoretical guarantee to do so for the \BH, see section \ref{sec:BurerHeuristic}.
 For the standard deviations \textcolor{red}{we have much of the same.}
-The standard deviation for gka9b and gka10b is with 0.331967 and 0.154788 respectively orders of magnitude larger than for the rest which have standard deviation less or equal
+The standard deviation for gka9b and gka10b is with 0.331967 and 0.154788 respectively a lot larger than for the rest which have standard deviation less or equal
 to 0.004201.
 
-%Therefore we conclude from our analysis, except for the instances gka9b and gka10b the returned value of the solver funnels towards a very high quality solution for increasing
-%parameters
+This summary of the data clearly suggests, that we should take a careful look at the instances of the form gka*b for $ ^{ * } \in \left[ 1:10 \right]   $. 
 
-%Out of the instances with known optimum value the performance on the instance gka10b is especially interesting.
+\begin{figure}[H]
+\caption{An overview of each solver ran on every instance with known optimal solution.}
+\includegraphics[width=\textwidth]{plots/OverviewPerformanceSolversResized.pdf}
+\end{figure} 
+\subsection{In-depth look at gka*b instances} 
+\label{ssec:gkaib} 
+As we have observed in subsection \ref{ssec:knownOptVal} the instances of the form gka*b with $ ^{ * } \in \left[ 2:10 \right]  $ perform by far the worst.
+Therefore we are going to take a careful look at the shared properties of these instances and their performance.
+As stated in \cite{MallachLibrary} the instances gka*b are originally \BQP instances.
+After the transformation to \MCP the number of vertices range from 21 to 126.
+Except for instance gka10b, the number of vertices increases by 10 compared to the previous instance, i.e. gka3b has 31 vertices and gka4b has 41 vertices.
+The vertex that is connected to every other vertex is called the sun vertex.
+All instances have a (rounded) density of 1.
+Looking at the distribution of weights we see that there are edges of different signs.
+A closer look reveals that the edges with negative weight are exclusively the edges incident to the sun vertex, i.e. the vertex connected to all other vertices.
+
 We will take a deeper look at the instances gka9b and gka10b, starting with gka9b:
-\todo[inline]{Add plot}
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{plots/gka9b.mc.pdf}
+\end{figure} 
 First of all we notice that the quality of the returned cut strongly varies and that it keeps oscillating even for big parameters.
 This is very interesting as usually the quality of the solution funnels towards high quality solutions for increasing parameters.
 Furthermore for 5 solvers the returned cut has the value of the trivial cut.
@@ -1576,18 +1612,9 @@ However, the instances gka*b with $ ^{ * }  \in \left[ 1:8 \right]  $ the same c
 Another explanation might be that the 
 Therefore the previous observations can not be a thorough explanation of the performance.
 
-\subsection{In-depth look at gka*b instances} 
-As we have observed in subsection \ref{ssec:knownOptVal} the instances of the form gka*b with $ ^{ * } \in \left[ 2:10 \right]  $ perform by far the worst.
-Therefore we are going to take a look at the \textcolor{red}{what exactly?}
-As stated in \cite{MallachLibrary} the instances gka*b are originally \BQP instances.
-After the transformation to \MCP the number of vertices range from 21 to 126.
-Except for instance gka10b, the number of vertices increases by 10 compared to the previous instance, i.e. gka3b has 31 vertices and gka4b has 41 vertices.
-The vertex that is connected to every other vertex is called the sun vertex.
-All instances have a (rounded) density of 1.
-Looking at the distribution of weights we see that there are edges of different signs.
-A closer look reveals that the edges with negative weight are exclusively the edges incident to the sun vertex, i.e. the vertex connected to all other vertices.
-\subsection{Instances without known optimal value} 
 
+\subsection{Instances without known optimal value} 
+\label{ssec:UnknownOptVal} 
 In this subsection we are going to consider the instances, where there is no known optimal value, i.e. the library \cite{MallachLibrary} does not provide one.
 Although there is no optimal value we are still interested in the quality of a solution as a ratio.
 For each instance we therefore normalise the returned values by dividing by the maximal returned value.
