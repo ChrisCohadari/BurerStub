@@ -120,7 +120,7 @@ Furthermore we will describe an algorithm to improve a cut value by means of tri
 attempts to improve the cut value.
 Lastly we will end the section with the \BH.
 This is the algorithm on which the experimental data is based upon and it depends on two parameters $ M $ and $ N $. The parameter $ M $ can be thought of as the number of
-seeds, i.e. the number of points to optimise from. The parameter $ N $ controls the number of consecutive tries of improving the cut value from a given starting point.
+seeds, i.e. the number of points to optimise from. The parameter $ N $ controls the number of consecutive attempts to improve the cut value from a given starting point.
 
 In section \ref{sec:BQP2MC} we show that instances of the binary quadratic programming problem can be transformed to instances of the maximum cut problem.
 Thus this section shows how to provide heuristic solutions to instances of the \BQP.
@@ -456,7 +456,7 @@ How can we derive a good cut from an optimum solution to \ref{def:relaxedbqp}?
 The second big idea by Goemans and Williamson, answers the question.
 As the heuristic presented later on in the text is based on this idea we will describe it in detail.
 
-Let $ v_1 , \dots , v_n $ be an optimal solution and denote the optimum value by OPT.
+Let $ v_1 , \dots , v_n $ be an optimal solution and denote the optimal value by OPT.
 We have $ v_i \in \mathbb{S} ^{ d }  $ for all $ i \in \left[ 1:n \right]  $ and 
 for all $ i,j \in \left[ 1:n \right]  $ we have $ \cos( \theta _{ ij }  ) = v_i ^T v_j $. 
 Here $ \theta _{ ij }  $ denotes the angle between $ v_i $ and $ v_j $.
@@ -1328,7 +1328,7 @@ Since algorithm \ref{alg:ProcedureCUT} finds all Goemans-Williamson-type cuts an
 %If $ v_i $ and $ v_j $ are diametrically opposed they are by construction always seperated, therefore the probability is 1. This matches the probability assigned in Lemma
 %\ref{lem:angle}.
 %If $ v_i $ and $ v_j $ are not diametrically opposed the assignement of 
-%As $ \theta $ is not necessarily a optimum solution to \BQP \ref{def:relaxedbqp} we have to bound with $ \psi ( \theta) $ instead of the optimum value.
+%As $ \theta $ is not necessarily a optimum solution to \BQP \ref{def:relaxedbqp} we have to bound with $ \psi ( \theta) $ instead of the optimal value.
 
 %\textcolor{red}{Let us quickly go over the changes: \\
 %As $ f $ is nonconvex, we can not expect to find the global minimum, only a local minimum.
@@ -1413,7 +1413,7 @@ heuristic solution by running algorithm \ref{alg:improvedCut} from different sta
 \caption{Burer heuristic}
 \label{alg:BurerStub} 
 \begin{algorithmic}[1]
-\Require Undirected weighted graph $ G $, number of seeds $ M $, number of consecutive tries $ N $
+\Require Undirected weighted graph $ G $, number of seeds $ M $, number of consecutive attempts $ N $
 \Ensure A cut $ x^* $
 \State Let $ x^* $ trivial cut, i.e. all vertices on one side
 \For{ $ i \gets 0,n $}
@@ -1526,7 +1526,7 @@ The vertex $ v_0 $ is also called the sun vertex.
 \subsection{Experimental Setup} 
 The goal of our experimental study is to compare the performance of the \BH for a range of different parameters.
 We recall that the \BH depends on two parameter:
-The parameter N, which determines the number of consecutive tries for improving a cut and the parameter M, which controls the number of starting points.
+The parameter N, which determines the number of consecutive attempts to improve a cut and the parameter M, which controls the number of starting points.
 We are going to compare 21 solvers, which are the combinations of $ M \in \left\{ 1, 5, 10, 15, 20, 30, 40, 50 \right\}  $ and $ N \in \left\{ 5, 10 , 15 \right\}  $.
 As these parameters are characteristic we have the following naming convention:
 The solver with the name Mxx.Nyy is the \BH with M=xx and N=yy.
@@ -1536,51 +1536,65 @@ The library comprises 431 instances, split into 8 classes.
 The number of vertices ranges from 21 to 3000 with 25\% of the instances having 100 or fewer vertices, 50\% having 121 or fewer vertices and 75\% having 251 or fewer vertices.
 The (rounded) densities range from 0.001 to 1 with 25\% of the instances having density 0.1 or less, 50\% having density 0.3 or less and 75\% having density 0.8 or less.
 Thus we have a range of different sized graphs from low density to high density.
-The runtime of the solvers is measured in the number of generated cuts, as this metric is system independent.
+The runtime of the solvers is measured in the number of generated cuts, since this metric is system independent.
 
 We will distinguish between instances for which the optimal value is known and those for which the optimal value is not known.
-Since we are interested in the approximation ratio the returned cut values are divided by the optimal value.
-For the instances without known optimum value, we normalise by the largest returned cut, see subsection \ref{ssec:UnknownOptVal}.
+Since we are interested in the approximation ratio, the returned cut values are divided by the optimal value.
+For the instances without known optimal value, we normalise by the largest returned cut, see subsection \ref{ssec:UnknownOptVal}.
 In the analysis we will consider three indicators for a given instance.
-The smallest and biggest returned cut value over the 21 solvers.
+The smallest and largest returned ratio over the 21 solvers.
 Lastly we will investigate the standard deviation, which indicates how sensitive the heuristic is to different choices of parameters.
 
 The goal is to investigate the overall performance and find out for which parameters the \BH works best.
-Measuring the number of produced cuts will help us in weighting out the benefit of improved solutions versus the increased runtime for bigger parameters.
+Measuring the number of produced cuts will help us in evaluating the trade-off between improved solutions and increased runtime.%out the benefit of improved solutions versus the increased runtime for bigger parameters.
 
 \subsection{Instances with known optimal value} 
 \label{ssec:knownOptVal} 
-We are going to investigate the data identifying instances, for which the \BH performs the worst and take a detailed look at those in subsection \ref{ssec:gkaib}.
+We are going to investigate the instances with known optimal value identifying instances, for which the \BH performs the worst and take a detailed look at those in subsection \ref{ssec:gkaib}.
 
-There are 332 instances with known optimum value.
-Out of those 146 instances are solved optimally by each of the 21 solvers. 
-\improvement{It could be interesting to have a count of all the solvers that reached the optimal value for different choices of parameters}
+We are going to take a closer look at the performance of the 21 solvers on the 332 instances with known optimal value.
+There are 146 instances which solved optimally by each of the 21 solvers. 
 
 Furthermore there are 154 instances for which at least one of the solvers but not all finds the optimal value.
 Out of these instances for all but 6, every solver achieves an approximation ratio, or simply ratio, of at least 0.975207.
-The 6 instances that do not are of the form gka*b for $ ^{ * } \in \left[ 3:8 \right]   $. Their worst case performance ranges from 0.248276 to 0.847458 and the standard
+The excluded 6 instances are of the form gka*b for $ ^{ * } \in \left[ 3:8 \right]   $. 
+Their worst case performance ranges from 0.248276 to 0.847458 and the standard
 deviations range from 0.059270 to 0.166898.
 Again excluding those instances the standard deviation of each instance decreases considerably to less or equal to 0.006419.
-\improvement{Analyse these}
 
 Lastly there are 32 instances for which none of the 21 solvers finds the optimal value.
 For these instances we first take a look at the highest achieved ratio over all the solvers.
-Doing this, we see that there are only two instances namely gka10b with 0.863636 and gka9b with 0.875912 for which the highest ratio is less than \GWconst.
-Other than those every other instance reaches a highest ratio of greater than 0.99.
+Doing this, we see that there are only, two instances namely gka10b with 0.863636 and gka9b with 0.875912 for which the highest ratio is less than \GWconst.
+For every other instance the highest achieved ratio is greater than 0.99.
 Regarding the minimum the same phenomenon occurs.
 For the two instances gka10b and gka9b the lowest ratios are 0.000000 and 0.277372 respectively.
 For the other instance the lowest ratio is greater than 0.97 exceeding \GWconst.
 This means that for 30 out of those 32 instances every solver returns a solution satisfying the performance guarantee of the Goemans-Williamson algorithm, although there is no
 theoretical guarantee to do so for the \BH, see section \ref{sec:BurerHeuristic}.
-For the standard deviations \textcolor{red}{we have much of the same.}
-The standard deviation for gka9b and gka10b is with 0.331967 and 0.154788 respectively a lot larger than for the rest which have standard deviation less or equal
+Essentially the same applies to the standard deviations.
+The standard deviation for gka9b and gka10b, with 0.331967 and 0.154788 respectively, is a lot larger than for the other instances which have standard deviation less or equal
 to 0.004201.
 
-This summary of the data clearly suggests, that we should take a careful look at the instances of the form gka*b for $ ^{ * } \in \left[ 1:10 \right]   $. 
+This summary of the data clearly suggests, that we should take a careful look at the instances of the form gka*b for $ ^{ * } \in \left[ 1:10 \right]   $, see subsection
+\ref{ssec:gkaib}. 
 
-\begin{figure}[H]
-\caption{An overview of each solver ran on every instance with known optimal solution.}
+\improvement{Reread paragraph}
+Our previous analysis shows that for the majority of instances with known optimal value the optimal value is attained.
+Therefore it is sensible to count the number of optimally solved instances for each solver and the average number of generated cuts.
+This is done in the top plot in figure \ref{plot:PerformanceSolversKnownInstances}, where the entry M=xx  and N=yy indicates the number of optimally solved instances by
+the \BH Mxx.Nyy.
+In the same manner, the bottom plot tracks the average number of generated cuts for each solver over all instances with known optimal value.
+The figure clearly shows that increasing the parameters individually or at the same time increases both the number of optimally solved instances and the average number of
+generated cuts.
+We can also see that the returns are diminishing, i.e. further increasing large parameters yields a few more optimally solved instances at the cost of having to generate a lot more
+cuts.
+\unsure{Maybe stop here}
+\textcolor{red}{Lastly we can see that increasing only the parameter N increases the average number of generated cuts by a fairly consistent constant.}
+
+\begin{figure}
 \includegraphics[width=\textwidth]{plots/OverviewPerformanceSolversResized.pdf}
+\caption{An overview of the performance of each solver ran on every instance with known optimal solution.}
+\label{plot:PerformanceSolversKnownInstances} 
 \end{figure} 
 \subsection{In-depth look at gka*b instances} 
 \label{ssec:gkaib} 
@@ -1595,10 +1609,18 @@ Looking at the distribution of weights we see that there are edges of different 
 A closer look reveals that the edges with negative weight are exclusively the edges incident to the sun vertex, i.e. the vertex connected to all other vertices.
 
 We will take a deeper look at the instances gka9b and gka10b, starting with gka9b:
-\begin{figure}[H]
+\begin{figure}
 \includegraphics[width=\textwidth]{plots/gka9b.mc.pdf}
+\caption{Overview of the returned ratios and number of generated cuts for each solver on the instance gka9b.}
+\label{plot:gka9b} 
 \end{figure} 
-First of all we notice that the quality of the returned cut strongly varies and that it keeps oscillating even for big parameters.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{plots/gka10b.mc.pdf}
+\caption{Overview of the returned ratios and number of generated cuts for each solver on the instance gka10b.}
+\label{plot:gka10b} 
+\end{figure} 
+In figure \ref{plot:gka10b}  we notice that the quality of the returned cut strongly varies and that it keeps oscillating even for big parameters.
 This is very interesting as usually the quality of the solution funnels towards high quality solutions for increasing parameters.
 Furthermore for 5 solvers the returned cut has the value of the trivial cut.
 Notably 4 out of those 5 solvers have $ N = 5 $.
@@ -1621,15 +1643,15 @@ For each instance we therefore normalise the returned values by dividing by the 
 By construction the values will be between 0 and 1 with at least one value being 1.
 Looking at the smallest cut ratio of each instance we see that every instance has a ratio greater than 0.973214.
 Considering the largest standard deviation between the ratios returned for each solver we see that the standard deviation is less or equal to 0.006403. 
-For these observations we deduce that for the instances without known optimum value the \BH is very robust. 
+For these observations we deduce that for the instances without known optimal value the \BH is very robust. 
 By robust we mean that the quality of the returned cut is not very sensitive to the choice of parameters.
 
 \subsection{Results} 
 The experiments gather further data that the \BH is highly effective at finding high quality approximations.
-Out of the 332 test instances with known optimum value, there are only 6 instances for which the heuristic returns a cut with ratio less than \GWconst 
-\textcolor{red}{(the performance guarantee in Goemans Williamson)}.
+Out of the 332 test instances with known optimal value, there are only 6 instances, for which the heuristic returns a cut with ratio less than \GWconst.
+Recall that \GWconst is the constant of the performance guarantee in the Goemans Williamson algorithm.
 They are gka*b for $ ^{ * } \in \left[ 5:10 \right]   $.
-In particular the heuristic return high quality cuts for instances with mixed sign weights, these are \textcolor{red}{how many are they?}
+In particular the heuristic returns high quality cuts for instances with mixed sign weights, these are \textcolor{red}{how many are they?}
 \todo[inline]{find out number of instances with mixed sign}
 This is very impressive, as the performance guarantee of the Goemans Williamson algorithm only holds for graphs with nonnegative weights. Therefore there is no theoretical
 reason for the approximation algorithm to perform well, let alone the \BH.
@@ -1645,6 +1667,14 @@ If the approximate solution barely changes there is a good chance that it will n
 Therefore we can accept the returned solution as an approximation.
 However, if there is a lot of deviation in the solutions, then the heuristic should be rerun for bigger parameters as this might lead to better solutions.
 }
+Finally we have identified, that the instances in the library \cite{MallachLibrary} that perform by far the worst are gka*b for $ ^{ * } \in \left[ 3:10 \right]   $.
+We have observed that those instances have the following common properties.
+They all have rounded density 1. 
+They all have edges with negative weights and edges with positive weights.
+Again note that the edges with negative weights are the edges incident to the star vertex.
+Compared to the edge weights their optimal cut values are the smallest in the library \cite{MallachLibrary}.
+
+\todo[inline]{Decide for Goemans-Williamson or Goemans Williamson}
 
 \bibliography{bibliography}
 \bibliographystyle{alpha}
