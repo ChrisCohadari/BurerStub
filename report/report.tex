@@ -20,7 +20,7 @@
 \usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{xargs}
 \usepackage{xspace}
-\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny,disable]{todonotes}
 \newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
 \newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
 \newcommandx{\info}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
@@ -81,7 +81,6 @@
 \newtheorem*{rec}{Recall}
 
 \begin{document}
-
 \tableofcontents
 
 \section{Introduction} 
@@ -101,7 +100,7 @@ That includes introducing a \sdp relaxation for the \mcp and showing how to deri
 We will discuss the performance guarantee in detail. 
 However, the proof of polynomial runtime will not be treated here and we kindly refer to \cite{Korte2018}.
 
-In section \ref{rankTworelaxation}, we lay the theoretical foundation for the \BH. %(described in section \ref{sec:BurerHeuristic}).
+In section \ref{sec:rankTworelaxation}, we lay the theoretical foundation for the \BH. %(described in section \ref{sec:BurerHeuristic}).
 In particular we study the rank-two relaxation, which is a special case of the \SDP relaxation introduced in section \ref{sec:GoemansWilliamson} for dimension two in polar coordinates.
 This leads to an unconstrained nonconvex optimisation problem, which has advantages and disadvantages.
 %This includes giving a rank-two relaxation in polar coordinates, which leads to an unconstrained nonconvex optimisation problem. 
@@ -110,8 +109,7 @@ i.e. the number of variables remains the number of vertices of the graph.
 This implies good scalability to large instances.
 However as the function is nonconvex, we can not expect to solve this relaxation optimally.
 Therefore we face a trade-off between computational runtime and a theoretical guarantee, see \cite[p. 506]{Burer2002}.
-\improvement{Improve this sentence}
-We will conduct experiments on the library \cite{MallachLibrary} asserting the effectiveness in section \ref{sec:expermints}. %to investigate this trade-off. This yields data demonstrating the effectiveness.
+We will conduct experiments on the library \cite{MallachLibrary} asserting the effectiveness of the \BH in section \ref{sec:expermints}.
 
 In section \ref{sec:BurerHeuristic} we give a detailed exposition of the \BH.
 The heuristic combines the rank-two relaxation and Goemans-Williamson-type cuts. 
@@ -159,7 +157,7 @@ Task: &Find a cut in $ G $ with maximum total weight.
 It is well known that the \MCP is NP-hard, see \cite{Garey1974}. Therefore there has been a lot of work on approximation algorithms and heuristics tackling the \MCP.
 A groundbreaking contribution is the approximation algorithm described by Goemans and Williamson in \cite{GoemansWilliamson1995}.
 In fact the \BH is based on this approximation algorithm.
-Therefore we will spend the rest of this section on developing the theory to understand the algorithm by Goemans Williamson.
+Therefore we will spend the rest of this section on developing the theory to understand the algorithm by Goemans and Williamson.
 We will focus on the main ideas and not go into, for example proving the polynomial runtime. \\
 Following the description given by \cite[p. 268 ff]{Vazirani2003}, we can motivate the formulation of the \mcp as a binary quadratic program: \\
 We give a for our purposes sufficient definition of binary quadratic program.
@@ -234,7 +232,7 @@ Consider $ W = (w _{ ij } )  _{ 1 \leq i,j \leq n }, X =(x _{ ij } )  _{ 1 \leq 
 $ W \bullet X = \sum_{ i = 1 }^{ n } \sum_{ j = 1 }^{ n } w _{ ij } x _{ ij }  $ and vector of diagonal elements by $ \text{diag} \left( X \right) = \left( x _{ 11 } , \dots, x _{ nn } 
 \right) ^{ T } \in \mathbb{R} ^{ n }  $. Further we denote the vector of all ones by $ e $ and denote a symmetric positive semidefinite matrix $ X $ by $ X \succeq 0 $ .
 
-The following Lemma shows a useful reformulation of \ref{def:bqp}, which will form the basis of our construction of the Goemans Williamson algorithm.
+The following Lemma shows a useful reformulation of \ref{def:bqp}, which will form the basis of our construction of the Goemans-Williamson algorithm.
 \begin{lem}
 \label{lem:bqp2matrixopt} 
 The \BQP \ref{def:bqp} can be rewritten into the following matrix optimisation program
@@ -427,7 +425,7 @@ The algorithm presented by Goemans and Williamson can be stated as follows \cite
 We emphasise that nonnegative edge weights are required.
 This requirement is essential in the proof of Lemma \ref{lem:GWalgo}.
 \begin{algorithm}
-\caption{Goemans Williamson algorithm}
+\caption{Goemans-Williamson algorithm}
 \label{alg:GWalgo} 
 \begin{algorithmic}[1]
 %\State Solve \ref{def:bqp} approximately, i.e. find a feasible solution such that \textcolor{red}{the assosiacted value is} greater or equal 0.995 times the optimal value.
@@ -545,7 +543,7 @@ the associated cut is at least 0.878 times the maximum possible value.
 \end{thm} 
 
 \section{A rank-two relaxation} 
-\label{rankTworelaxation} 
+\label{sec:rankTworelaxation} 
 In this section we will investigate relaxation \ref{def:relaxedbqp} in dimension two.
 Instead of using Cartesian coordinates we will use polar coordinates.
 We will investigate the implications of these changes, following \cite[Sec. 3]{Burer2002}.
@@ -1485,7 +1483,8 @@ Then $ P ^{ \text{G}  }  _{ \text{BQP}  } = f \left( P ^{ \text{H}  } _{ \text{C
 Using this Theorem we can show a fundamental result allowing us to solve a \BQP as a \MCP. 
 \begin{cor}[{\cite[p. 2]{MallachLectureNotes}}]
 \label{cor:bqp2mcp} 
-Let $ Q \in \mathbb{R} ^{ n \times n }  $ and $ E = \left\{ \left\{ i,j \right\}  \mid i,j \in \left[ 1:n \right] \text{ such that } q _{ ij } + q _{ ji } \neq 0  \right\}  $.
+Consider a matrix $ Q \in \mathbb{R} ^{ n \times n }  $ and set \\
+$ E = \left\{ \left\{ i,j \right\}  \mid i,j \in \left[ 1:n \right] \text{ such that } q _{ ij } + q _{ ji } \neq 0  \right\}  $.
 Then the corresponding \BQP with the objective function $ x ^T Q x $ to be minimised can be solved as a \MCP on $ H = \left( W,F \right)  $ where $ W := \left\{ v_0,
 \dots, v_n \right\}  $ and $ F := \left\{ \left\{ v_i,v_j \right\}  \mid \left\{ i,j \right\} \in E \right\} \cup \left\{ \left\{ v_0,v_i \right\}  \mid i \in \left[ 1:n
 \right]   \right\}  $, with the objective function
@@ -1521,6 +1520,7 @@ This shows the result.
 As we can see the vertex $ v_0 $ has a special role as it is connected to all other vertices and its weight of the incident edges is calculated by $ \widetilde{ c } _{ i }  $.
 The vertex $ v_0 $ is also called the sun vertex.
 
+\newpage
 \section{Experimentation}
 \label{sec:expermints} 
 \subsection{Experimental Setup} 
@@ -1578,61 +1578,91 @@ to 0.004201.
 This summary of the data clearly suggests, that we should take a careful look at the instances of the form gka*b for $ ^{ * } \in \left[ 1:10 \right]   $, see subsection
 \ref{ssec:gkaib}. 
 
-\improvement{Reread paragraph}
 Our previous analysis shows that for the majority of instances with known optimal value the optimal value is attained.
 Therefore it is sensible to count the number of optimally solved instances for each solver and the average number of generated cuts.
 This is done in the top plot in figure \ref{plot:PerformanceSolversKnownInstances}, where the entry M=xx  and N=yy indicates the number of optimally solved instances by
 the \BH Mxx.Nyy.
-In the same manner, the bottom plot tracks the average number of generated cuts for each solver over all instances with known optimal value.
+In the same manner, the bottom plot tracks the (floored) average number of generated cuts for each solver over all instances with known optimal value.
 The figure clearly shows that increasing the parameters individually or at the same time increases both the number of optimally solved instances and the average number of
-generated cuts.
+generated cuts on average.
 We can also see that the returns are diminishing, i.e. further increasing large parameters yields a few more optimally solved instances at the cost of having to generate a lot more
 cuts.
-\unsure{Maybe stop here}
-\textcolor{red}{Lastly we can see that increasing only the parameter N increases the average number of generated cuts by a fairly consistent constant.}
 
+%We observe that both instances gka9b and gka10b arose by transformation from a \BQP to \MCP.
+%The transformed graphs are dense with density 1 and the maximum cut values are within the order of magnitude of the edge weights, except for the edges connected to the sun
+%vertex.
+%It needs to be mentioned, that the absolute value of the edges connected to the sun vertex have a much higher weight, this stems from the transforming the \BQP to a \MCP.
+%However, the instances gka*b with $ ^{ * }  \in \left[ 1:8 \right]  $ the same characteristics hold true but their performance is much better.
+%\todo[inline]{Analyse gka*b instances}
+%Another explanation might be that the 
+%Therefore the previous observations can not be a thorough explanation of the performance.
 \begin{figure}
 \includegraphics[width=\textwidth]{plots/OverviewPerformanceSolversResized.pdf}
 \caption{An overview of the performance of each solver ran on every instance with known optimal solution.}
 \label{plot:PerformanceSolversKnownInstances} 
 \end{figure} 
+
 \subsection{In-depth look at gka*b instances} 
 \label{ssec:gkaib} 
-As we have observed in subsection \ref{ssec:knownOptVal} the instances of the form gka*b with $ ^{ * } \in \left[ 2:10 \right]  $ perform by far the worst.
-Therefore we are going to take a careful look at the shared properties of these instances and their performance.
+As we have observed in subsection \ref{ssec:knownOptVal} the instances of the form gka*b with $ ^{ * } \in \left[ 3:10 \right]  $ perform by far the worst.
+%Therefore we are going to take a careful look at the shared properties of these instances and their performance.
 As stated in \cite{MallachLibrary} the instances gka*b are originally \BQP instances.
-After the transformation to \MCP the number of vertices range from 21 to 126.
+After the transformation to \MCP the number of vertices ranges from 21 to 126.
+\improvement{Mit tabelle ersetzen}
 Except for instance gka10b, the number of vertices increases by 10 compared to the previous instance, i.e. gka3b has 31 vertices and gka4b has 41 vertices.
-The vertex that is connected to every other vertex is called the sun vertex.
 All instances have a (rounded) density of 1.
 Looking at the distribution of weights we see that there are edges of different signs.
-A closer look reveals that the edges with negative weight are exclusively the edges incident to the sun vertex, i.e. the vertex connected to all other vertices.
+A closer look reveals that the edges with negative weight are exclusively the edges incident to the sun vertex, i.e. the additional vertex connected to all other vertices.
+The other edges have weights that are within the order of magnitude of the maximum cut value.
+Thus it could be possible that different cut values have larger gaps compared to other instances. 
+This provides a possible explanation for the much higher standard deviations.
+However, the instances gka*b with $ ^{ * }  \in \left[ 1:8 \right]  $ the same characteristics hold true but their performance is much better.
+\improvement{Decide leave it in or not}
+Therefore it is worthwile to take a closer look at the performance of the instances and search for similarities.
 
-We will take a deeper look at the instances gka9b and gka10b, starting with gka9b:
+\improvement{NOt yet provided}
+The figures for each instance are provided in the appendix. 
+In each figure the entry M=xx, N=yy of the top plot indicate the returned ratio of the solver Mxx.Nyy.
+The colormap is chosen such that dark green indicates a particularly good cut ratio and red a bad one.
+For the bottom plot the entries indicate the number of generated cuts.
+Unsurprisingly the data indicates that the \BH delivers worse approximation ratios as the size of the instance increases.
+
 \begin{figure}
-\includegraphics[width=\textwidth]{plots/gka9b.mc.pdf}
-\caption{Overview of the returned ratios and number of generated cuts for each solver on the instance gka9b.}
-\label{plot:gka9b} 
-\end{figure} 
+\includegraphics[width=\textwidth]{plots/gka8b.mc.pdf}
+\caption{Overview of the returned ratios and number of generated cuts for each solver on the instance gka8b.}
+\label{plot:gka8b} 
+\end{figure}
+
+Throughout these instances we notice that increasing one parameter while keeping the other the same sometimes yields a worse ratio.
+We will call this phenomenon a worsening, which can be observed in figure \ref{plot:gka10b} fixing N=5 or M=20. 
+Worsenings also occur in the instances, where one of the solvers finds the optimal solution,in figure \ref{plot:gka8b} fixing N=10 or M=30.
+A worsening can be explained by recalling that the algorithm depends on a randomly chosen starting point and the improvement of the cut utilises random perturbations.
+We observe that the number of worsenings increases as the size of the instances increase.
+This indicates that the function $ f $ from section \ref{sec:rankTworelaxation} "gets more complicated" for increasing sizes.
+By more complicated, we mean that the probability of a starting point leading to a good cut or a perturbation leading to a better cut decreases.
+
+%This demonstrates, that while running solver M20.N05 there must have been generated a particularly good seed and or perturbation, which allowed to find a ratio of 0.643.
+%The bigger instances demonstrate the role that randomness and thus "luck" plays in our algorithm.
+%Especially for the bigger instances, we can see the role that the randomly generated starting point plays. 
+
+Although worsenings occur, it is the case that by averaging out the performance on smaller parameters, i.e. averaging the ratios of $ M \in \left\{ 5,10,15,20
+\right\}  $ and $ N \in \left\{ 5,10 \right\} $, opposed to larger parameters, yields a smaller ratio than the average of $ M \in \left\{ 20,30,40,50 \right\}  $ and $ N \in \left\{ 10,15 \right\}  $.
+This indicates that on average the intuition that larger parameters yield better results still holds.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{plots/gka10b.mc.pdf}
 \caption{Overview of the returned ratios and number of generated cuts for each solver on the instance gka10b.}
 \label{plot:gka10b} 
 \end{figure} 
-In figure \ref{plot:gka10b}  we notice that the quality of the returned cut strongly varies and that it keeps oscillating even for big parameters.
-This is very interesting as usually the quality of the solution funnels towards high quality solutions for increasing parameters.
-Furthermore for 5 solvers the returned cut has the value of the trivial cut.
+Since the instance gka10b has by far the worst performance we will close this chapter by describing figure \ref{plot:gka10b}.
+In figure \ref{plot:gka10b}  we notice that the ratio strongly varies and that worsenings occur even for big parameters.
+For example M40.N10 to M50.N10 and M40.N10 to M40.N15 are both worsenings.
+We can even observe that the ratio 0.864 of M40.N10 is smaller than the ratio 0.792 of M50.N15.
+It is particularly interesting that gka10b is the only instance where the weight of the trivial cut is also the best found weight. 
+There are 5 solvers for which the returned cut has the value of the trivial cut.
 Notably 4 out of those 5 solvers have $ N = 5 $.
 
-We observe that both instances gka9b and gka10b arose by transformation from a \BQP to \MCP.
-The transformed graphs are dense with density 1 and the maximum cut values are within the order of magnitude of the edge weights, except for the edges connected to the sun
-vertex.
-It needs to be mentioned, that the absolute value of the edges connected to the sun vertex have a much higher weight, this stems from the transforming the \BQP to a \MCP.
-However, the instances gka*b with $ ^{ * }  \in \left[ 1:8 \right]  $ the same characteristics hold true but their performance is much better.
-\todo[inline]{Analyse gka*b instances}
-Another explanation might be that the 
-Therefore the previous observations can not be a thorough explanation of the performance.
+
 
 
 \subsection{Instances without known optimal value} 
@@ -1647,35 +1677,70 @@ For these observations we deduce that for the instances without known optimal va
 By robust we mean that the quality of the returned cut is not very sensitive to the choice of parameters.
 
 \subsection{Results} 
-The experiments gather further data that the \BH is highly effective at finding high quality approximations.
+The experiments gather further evidence that the \BH is highly effective at finding high quality approximations.
 Out of the 332 test instances with known optimal value, there are only 6 instances, for which the heuristic returns a cut with ratio less than \GWconst.
-Recall that \GWconst is the constant of the performance guarantee in the Goemans Williamson algorithm.
+Recall that \GWconst is the constant of the performance guarantee in the Goemans-Williamson algorithm.
 They are gka*b for $ ^{ * } \in \left[ 5:10 \right]   $.
-In particular the heuristic returns high quality cuts for instances with mixed sign weights, these are \textcolor{red}{how many are they?}
-\todo[inline]{find out number of instances with mixed sign}
-This is very impressive, as the performance guarantee of the Goemans Williamson algorithm only holds for graphs with nonnegative weights. Therefore there is no theoretical
+
+In particular the heuristic returns high quality cuts for instances with mixed sign weights.
+This is very impressive, as the performance guarantee of the Goemans-Williamson algorithm only holds for graphs with nonnegative weights. Therefore there is no theoretical
 reason for the approximation algorithm to perform well, let alone the \BH.
 
-We point out that the standard deviation of the ratios of the returned cut values for different parameters is very low, except the instances gka*b for $ ^{ * } \in \left[ 3:10 \right] $.
-Therefore the data suggests, that the \BH is a rather robust procedure and that if a run with large parameters finds a high quality solution, then a high quality solution can already be found with small values.
-\todo[inline]{What does very good mean?}
+We point out that the standard deviation of the ratios of the returned cut values for different parameters is very low, except for the instances gka*b for $ ^{ * } \in \left[ 3:10 \right] $.
+Therefore the data suggests, that the \BH is rather robust and that, generally speaking, if a run with large parameters finds a high quality solution, then a high quality solution can already be
+found with small parameters.
 
-\textcolor{red}{
-Looking at this from the perspective that the optimal value is not known, the following procedure might be an informed choice: \\
-Run the \BH for very small parameters, i.e $ M = 1 $ and $ N = 5 $ and gradually increase them.
-If the approximate solution barely changes there is a good chance that it will not change for bigger parameters (within reason) either.
-Therefore we can accept the returned solution as an approximation.
-However, if there is a lot of deviation in the solutions, then the heuristic should be rerun for bigger parameters as this might lead to better solutions.
-}
+%\textcolor{red}{
+%Looking at this from the perspective that the optimal value is not known, the following procedure might be an informed choice: \\
+%Run the \BH for very small parameters, i.e $ M = 1 $ and $ N = 5 $ and gradually increase them.
+%If the approximate solution barely changes there is a good chance that it will not change for bigger parameters (within reason) either.
+%Therefore we can accept the returned solution as an approximation.
+%However, if there is a lot of deviation in the solutions, then the heuristic should be rerun for bigger parameters as this might lead to better solutions.
+%}
 Finally we have identified, that the instances in the library \cite{MallachLibrary} that perform by far the worst are gka*b for $ ^{ * } \in \left[ 3:10 \right]   $.
 We have observed that those instances have the following common properties.
 They all have rounded density 1. 
 They all have edges with negative weights and edges with positive weights.
 Again note that the edges with negative weights are the edges incident to the star vertex.
 Compared to the edge weights their optimal cut values are the smallest in the library \cite{MallachLibrary}.
+These instances have demonstrated the role that randomness plays in the \BH, as we have observed several occurences of worsenings, see subsection
+\ref{ssec:gkaib}.
+However, we still observed that on average the returned cut value increases for larger parameters.
 
-\todo[inline]{Decide for Goemans-Williamson or Goemans Williamson}
-
+\appendix
+\section{Appendix} 
+Plots of the instances gka*b for $ ^{ * } \in \left[ 5:10 \right]   $ where the entry with M=xx and N=yy stands for the solver Mxx.Nyy and the entry of the top plot
+shows the returned cut ratio (returned cut weight/optimal cut value) and the bottom plot shows the number of generated cuts.
+\begin{figure}
+\includegraphics[width=\textwidth]{plots/gka1b.mc.pdf}
+\end{figure} 
+\begin{figure}
+\includegraphics[width=\textwidth]{plots/gka2b.mc.pdf}
+\end{figure} 
+\begin{figure}
+\includegraphics[width=\textwidth]{plots/gka3b.mc.pdf}
+\end{figure} 
+\begin{figure}
+\includegraphics[width=\textwidth]{plots/gka4b.mc.pdf}
+\end{figure} 
+\begin{figure}
+\includegraphics[width=\textwidth]{plots/gka5b.mc.pdf}
+\end{figure} 
+\begin{figure}
+\includegraphics[width=\textwidth]{plots/gka6b.mc.pdf}
+\end{figure} 
+\begin{figure}
+\includegraphics[width=\textwidth]{plots/gka7b.mc.pdf}
+\end{figure} 
+\begin{figure}
+\includegraphics[width=\textwidth]{plots/gka8b.mc.pdf}
+\end{figure} 
+\begin{figure}
+\includegraphics[width=\textwidth]{plots/gka9b.mc.pdf}
+\end{figure} 
+\begin{figure}
+\includegraphics[width=\textwidth]{plots/gka10b.mc.pdf}
+\end{figure} 
 \bibliography{bibliography}
 \bibliographystyle{alpha}
 \listoftodos[Notes]
