@@ -10,6 +10,10 @@
 \usepackage{amsthm}
 \usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{lscape}
+
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 %https://ctan.mirror.norbert-ruehl.de/macros/latex/contrib/algorithms/algorithms.pdf
@@ -114,7 +118,7 @@ This leads to an unconstrained nonconvex optimisation problem, which has advanta
 On the upside by using this relaxation the number of variables is not increased, 
 i.e. the number of variables remains the number of vertices of the graph.
 This implies good scalability to large instances.
-However as the function is nonconvex, we can not expect to solve this relaxation optimally.
+However as the function is nonconvex, we cannot expect to solve this relaxation optimally.
 Therefore we face a trade-off between computational runtime and a theoretical guarantee, see \cite[p. 506]{Burer2002}.
 We will conduct experiments on the library \cite{MallachLibrary} asserting the effectiveness of the \BH in subsection \ref{sec:expermints}.
 In subsection \ref{sec:BurerHeuristic} we give a detailed exposition of the \BH.
@@ -194,7 +198,6 @@ This explains, why we can write the Maximum Cut Problem, abbreviated with \MCP, 
 \label{def:mcp} 
 \addConstraint{x_i}{ \in  \left\{ -1,1 \right\}  }{\quad \forall i \in [ 1:n ]}
 \end{maxi}
-%\todo[inline]{Formulation \ref{def:mcp} is equivalent to }
 Alternatively, we can solve the following binary quadratic program as Lemma \ref{lem:01}. 
 This will prove useful as we progress in the section.
 \begin{mini}
@@ -218,10 +221,10 @@ This expresses the same sum as
 \end{align*} 
 \begin{lem}
 \label{lem:01}
-The solutions of \ref{def:mcp} and \ref{def:bqp} coincide.
+The solutions of (\ref{def:mcp}) and (\ref{def:bqp}) coincide.
 \end{lem} 
 \begin{proof}
-We first observe that the constraints of \ref{def:mcp} and \ref{def:bqp} coincide so it suffices to show that the target function of the BQP is minimised if and only if the
+We first observe that the constraints of (\ref{def:mcp}) and (\ref{def:bqp}) coincide so it suffices to show that the target function of the BQP is minimised if and only if the
 target function of the \MCP is maximised. The following computation uses that $ x_i x_j \in \left\{-1,1\right\}$ for all $ i,j \in \left[ 1 : n \right]  $ :
 \begin{align*}
 &\sum_{ 1 \leq i < j \leq n    }^{  } w _{ ij } x_i x_j 
@@ -240,10 +243,10 @@ Consider $ W = (w _{ ij } )  _{ 1 \leq i,j \leq n }, X =(x _{ ij } )  _{ 1 \leq 
 $ W \bullet X = \sum_{ i = 1 }^{ n } \sum_{ j = 1 }^{ n } w _{ ij } x _{ ij }  $ and vector of diagonal elements by $ \text{diag} \left( X \right) = \left( x _{ 11 } , \dots, x _{ nn } 
 \right) ^{ T } \in \mathbb{R} ^{ n }  $. Further we denote the vector of all ones by $ e $ and denote a symmetric positive semidefinite matrix $ X $ by $ X \succeq 0 $ .
 
-The following Lemma shows a useful reformulation of \ref{def:bqp}, which will form the basis of our construction of the Goemans-Williamson algorithm.
+The following Lemma shows a useful reformulation of (\ref{def:bqp}), which will form the basis of our construction of the Goemans-Williamson algorithm.
 \begin{lem}
 \label{lem:bqp2matrixopt} 
-The \BQP \ref{def:bqp} can be rewritten into the following matrix optimisation program
+The \BQP (\ref{def:bqp}) can be rewritten into the following matrix optimisation program
 \begin{mini}
 {}{ \frac{ 1 }{ 2 } W \bullet X }{}{}
 \label{def:matoptprog} 
@@ -253,7 +256,7 @@ The \BQP \ref{def:bqp} can be rewritten into the following matrix optimisation p
 \end{mini}
 \end{lem} 
 \begin{proof}
-First of all, we are going to show that a matrix $ X $ satisfies the conditions of \ref{def:matoptprog} if and only if there exists a $ x \in \left\{ -1,1 \right\} ^{ n }  $
+First of all, we are going to show that a matrix $ X $ satisfies the conditions of (\ref{def:matoptprog}) if and only if there exists a $ x \in \left\{ -1,1 \right\} ^{ n }  $
 such that $ X = xx^T $: \\
 As $ \text{rank} (X) = 1$ implies that the columns of the matrix are scalar multiples of each other, there exist $ x,y \in \mathbb{R} ^{ n } \setminus {0}  $ such that $ X =
 xy^T $. \\
@@ -358,7 +361,8 @@ As we will not use \SDP for the heuristic refer to \cite[p. 258 ff]{Vazirani2003
 \begin{thm}[{ \cite[p. 259]{Vazirani2003} }]
 For any $ \varepsilon > 0  $ semidefinite programs can be  solved up within an additive error of $ \varepsilon  $, in time polynomial in $ n $ and $ \log (1/ \varepsilon ) $
 \end{thm} 
-By setting $ C = -\frac{ 1 }{ 2 } W $ and $ D_i = e_i e_i ^T, d_i = 1 $ for all $ i \in \left[ 1:n \right]  $ we see that we can relax the matrix optimisation program \ref{def:matoptprog} into a \SDP by simply dropping the rank
+By setting $ C = -\frac{ 1 }{ 2 } W $ and $ D_i = e_i e_i ^T, d_i = 1 $ for all $ i \in \left[ 1:n \right]  $ we see that we can relax the matrix optimisation program
+(\ref{def:matoptprog}) into a \SDP by simply dropping the rank
 constraint:
 \begin{mini}
 {}{ \frac{ 1 }{ 2 } W \bullet X }{}{}
@@ -367,7 +371,7 @@ constraint:
 \end{mini}
 
 
-The first big idea is to relax \BQP \ref{def:bqp} in this ingenious way.
+The first main idea is to relax \BQP (\ref{def:bqp}) in the following manner.
 We replace the unit scalars $ x_i $ by unit vectors $ v_i \in \mathbb{R} ^{ d } $ (where the dimension $ d >1	$ can be chosen freely). Furthermore the product $ x_i x_j $ can be interpreted as the one dimensional scalar product, we therefore replace it by $
 v_i ^T v_j $, which is the standard scalar product in $ \mathbb{R} ^{ d }  $.
 Noting $ v_i \in \mathbb{R} ^{ d }  $ the relaxation writes as follows:
@@ -379,8 +383,8 @@ Noting $ v_i \in \mathbb{R} ^{ d }  $ the relaxation writes as follows:
 \begin{rem}
 \begin{enumerate}
 \item 
-We are going to show that \ref{def:relaxedbqp} is a relaxation of \ref{def:bqp}: \\
-Let $ x \in \left\{ -1, 1 \right\} ^{ n } $ be a solution to \ref{def:bqp}. 
+We are going to show that (\ref{def:relaxedbqp}) is a relaxation of (\ref{def:bqp}): \\
+Let $ x \in \left\{ -1, 1 \right\} ^{ n } $ be a solution to (\ref{def:bqp}). 
 Let $ e_1 \in \mathbb{R} ^{ d } $ be the first standard basis vector and set $ v_i = x_i e_1 \in \mathbb{R} ^{ d }  $ for all $ i \in \left[ 1:n \right]  $.
 Then the $ v_i $'s form a feasible solution as for every $ i \in \left[ 1:n \right]  $ we have 
 $ \left\Vert v_i \right\Vert = \left| x_i \right| \left\Vert e_1 \right\Vert _{ d } = 1 $.
@@ -392,7 +396,7 @@ vertex $ i $ in $ G $.
 Aiming to apply Lemma \ref{lem:bqp2matrixopt}, we can change the variables $ x_i x_j $ to $ v_i ^T v_j $. Therefore $ X _{ ij }  $ is given by $ v_i ^T v_j $ instead of $ x_i
 ^T x_j $.
 \begin{lem}[{\cite[p. 259f]{Vazirani2003}}]
-We can rewrite \ref{def:relaxedbqp} into the following \SDP
+We can rewrite (\ref{def:relaxedbqp}) into the following \SDP
 \begin{mini}
 {}{ \frac{ 1 }{ 2 } W \bullet X }{}{}
 \label{def:relaxedsdp} 
@@ -403,30 +407,30 @@ We can rewrite \ref{def:relaxedbqp} into the following \SDP
 \begin{proof}
 Throughout this proof we denote the $ i $-th column of a matrix $ L $ by $ L_i $. 
 
-Let $ X $ be a feasible solution of \ref{def:relaxedbqp}. 
+Let $ X $ be a feasible solution of (\ref{def:relaxedbqp}). 
 As $ X $ is positive semidefinite there exists a $ L \in \mathbb{R} ^{ n \times n }  $ such that $ X = L ^T L $. 
 Thus we have $ X _{ ij } = L_i ^T L_j $ for all $ i,j \in \left[ 1:n \right]  $.
 For $ i \in \left[ 1:n \right] $ we set $ v_i := L_i $.
-As $ X $ is a feasible solution to \ref{def:relaxedsdp} we have $ 1 = X _{ ii } = L_i ^T L_i = \left\Vert v_i \right\Vert ^{ 2 } _{ n } $, which shows $ \left\Vert v_i
-\right\Vert _{ n } = 1 $ for all $ i \in \left[ 1:n \right]  $. Thus the $ v_i $'s constitute a feasible solution to \ref{def:relaxedbqp} of the same objective function value:
+As $ X $ is a feasible solution to (\ref{def:relaxedsdp}) we have $ 1 = X _{ ii } = L_i ^T L_i = \left\Vert v_i \right\Vert ^{ 2 } _{ n } $, which shows $ \left\Vert v_i
+\right\Vert _{ n } = 1 $ for all $ i \in \left[ 1:n \right]  $. Thus the $ v_i $'s constitute a feasible solution to (\ref{def:relaxedbqp}) of the same objective function value:
 \begin{align*}
 \frac{ 1 }{ 2 } \sum_{ i,j = 1 }^{ n } w _{ ij } v_i ^T v_j = \frac{ 1 }{ 2 } W \bullet L^T L = \frac{ 1 }{ 2 } W \bullet X.
 \end{align*} 
 
-Given a feasible solution $ v_1 , \dots , v_n $	to \ref{def:relaxedbqp} we define the matrix $ L \in \mathbb{R} ^{ n \times n } $ by $ L_i := v_i $. 
+Given a feasible solution $ v_1 , \dots , v_n $	to (\ref{def:relaxedbqp}) we define the matrix $ L \in \mathbb{R} ^{ n \times n } $ by $ L_i := v_i $. 
 Now set $ X = L^T L $, we then have $ X _{ ij } = v_i ^T v_j $. 
 As the $ v_i $'s are a feasible solution we have $ X _{ ii } = \left\Vert v_i \right\Vert ^{ 2 } _{ n } =1 $ for $ i \in \left[ 1:n \right]  $.
 Furthermore $ X $ is positive semidefinite since $ y^T X y = \left\Vert Ly \right\Vert ^{ 2 } _{ n } \geq 0  $ for all $ y \in \mathbb{R} ^{ n }  $, which shows that $ X $ is
-a feasible solution of \ref{def:relaxedsdp} .
+a feasible solution of (\ref{def:relaxedsdp}).
 By construction we have that the two feasible solutions have the same value:
 \begin{align*}
 \frac{ 1 }{ 2 } W \bullet X = \frac{ 1 }{ 2 } \sum_{ i,j = 1 }^{ n } w _{ ij } X _{ ij } = \frac{ 1 }{ 2 } \sum_{ i,j = 1 }^{ n } w _{ ij } v_i ^T v_j
 \end{align*} 
 \end{proof}
 \begin{rem}
-As this is essential, we reiterate how to retrieve a solution of \ref{def:relaxedbqp} from a solution $ X $ of \ref{def:relaxedsdp}:
+As this is essential, we reiterate how to retrieve a solution of (\ref{def:relaxedbqp}) from a solution $ X $ of (\ref{def:relaxedsdp}):
 As $ X $ is a positive semidefinite matrix, using the Cholesky decomposition we compute a matrix $ L \in \mathbb{R} ^{ n \times n }  $ such that $ X = L^T L $. The columns of $
-L $ are a solution to \ref{def:relaxedbqp}.
+L $ are a solution to (\ref{def:relaxedbqp}).
 \end{rem} 
 
 The algorithm presented by Goemans and Williamson can be stated as follows \cite[p.424]{Korte2018}:
@@ -439,7 +443,7 @@ This requirement is essential in the proof of Lemma \ref{lem:GWalgo}.
 %\State Solve \ref{def:bqp} approximately, i.e. find a feasible solution such that \textcolor{red}{the assosiacted value is} greater or equal 0.995 times the optimal value.
 \Require A graph with nonnegative edge weights
 \Ensure A cut given by the set $ S $
-\State Find an approximately optimal solution $ X $ to \ref{def:relaxedbqp} 
+\State Find an approximately optimal solution $ X $ to (\ref{def:relaxedbqp}) 
 \State Find vectors $ y_1, ..., y_n \in S^d $ such that  $ y_i^Ty_j= x _{ ij }  $ for all $ i,j \in \left[ 1:n \right]  $ (using Cholesky decomposition)
 \State Choose a random point $ r \in \mathbb{S} ^{ d } $
 \State Set $ S := \left\{ i \in \left[ 1:n \right]  \mid r ^T y_i \geq 0  \right\}  $
@@ -448,16 +452,16 @@ This requirement is essential in the proof of Lemma \ref{lem:GWalgo}.
 \end{algorithm}
 
 As we will not solve semidefinite programs in the heuristic presented later in the text, we will for simplicity's sake, assume that we can find an optimal solution to
-\ref{def:relaxedsdp}.
-That means that we have an optimal solution to \ref{def:relaxedbqp}. 
-This inaccuracy can be absorbed into the approximation factor; as stated in \cite[p. 260]{Vazirani2003}. 
+(\ref{def:relaxedsdp}).
+That means that we have an optimal solution to (\ref{def:relaxedbqp}). 
+The inaccuracy of assuming an optimal solution to (\ref{def:relaxedbqp}) can be absorbed into the approximation factor; as stated in \cite[p. 260]{Vazirani2003}. 
 A detailed account of how to handle nearly optimal solutions is given in \cite{Korte2018}.
 Until the end of the subsection we will closely follow the description provided in \cite[p. 260 ff]{Vazirani2003}.
-In order to approximate the \MCP we need to relate this optimum solution to \ref{def:relaxedbqp} to a cut. 
+In order to approximate the \MCP we need to relate this optimum solution to (\ref{def:relaxedbqp}) to a cut. 
 As the matrix whose columns are an optimum solution to
-\ref{def:relaxedbqp} is in general not of rank $ 1 $ we are faced with a rounding problem. 
+(\ref{def:relaxedbqp}) is in general not of rank $ 1 $ we are faced with a rounding problem. 
 The question boils down to the following: 
-How can we derive a good cut from an optimum solution to \ref{def:relaxedbqp}?
+How can we derive a good cut from an optimum solution to (\ref{def:relaxedbqp})?
 
 The second big idea by Goemans and Williamson, answers the question.
 As the heuristic presented later on in the text is based on this idea we will describe it in detail.
@@ -523,7 +527,7 @@ By $ \frac{ 2 }{ \pi  } \frac{ \pi  }{ 1 - \cos( \pi )  } =2 $ the local minimum
 \begin{lem}
 \label{lem:GWalgo} 
 The expected value of the weight of a Goemans-Williamson cut is greater or equal to $ \alpha \cdot \text{OPT}  $, where OPT denotes the value of an optimal solution to
-\ref{def:relaxedbqp}.
+(\ref{def:relaxedbqp}).
 \end{lem} 
 \begin{proof}
 Using Lemma \ref{lem:alpha} we have for all $ \theta \in \left( 0, \pi  \right]   $:
@@ -552,7 +556,7 @@ the associated cut is at least 0.878 times the maximum possible value.
 
 \subsection{A rank-two relaxation} 
 \label{sec:rankTworelaxation} 
-In this subsection we will investigate relaxation \ref{def:relaxedbqp} in dimension two.
+In this subsection we will investigate relaxation (\ref{def:relaxedbqp}) in dimension two.
 Instead of using Cartesian coordinates we will use polar coordinates.
 We will investigate the implications of these changes, following \cite[Sec. 3]{Burer2002}.
 We will introduce the notion of angular representation of cuts, which are certain vectors that correspond to cuts.
@@ -622,7 +626,7 @@ To show the second property let $ \theta \in \mathbb{R} ^{ n }  $ and $ i \in \l
 \end{align*} 
 As all other entries of $ \cos( T(\theta) )   $ remain unchanged, $ f(\theta) = f(\theta+2\pi e_i) $ is established.
 \end{proof}
-Recalling \ref{eq:sp2cos} and \ref{eq:polar} we see that minimising $ f $ is nothing but solving \ref{def:relaxedbqp} in polar coordinates.
+Recalling (\ref{eq:sp2cos}) and (\ref{eq:polar}) we see that minimising $ f $ is nothing but solving (\ref{def:relaxedbqp}) in polar coordinates.
 This observation is of central importance and we denote the relaxation of the \MCP:
 \begin{align}
 \label{def:minf}
@@ -631,7 +635,7 @@ This observation is of central importance and we denote the relaxation of the \M
 This point of view has advantages and disadvantages.
 Since $ f $ is nonconvex we have no general tool to find a global minimum or even to decide whether a local minimum is a global minimum.
 In general, there can be multiple local but nonglobal minima.
-However, formulation \ref{def:minf} is an unconstrained minimisation problem, with a fairly easy analytical description of $ f $. 
+However, formulation (\ref{def:minf}) is an unconstrained minimisation problem, with a fairly easy analytical description of $ f $. 
 This allows for efficient computation of local minima.
 Making use of its simplicity we compute its partial derivatives by hand.
 \begin{lem}
@@ -642,9 +646,9 @@ The partial derivatives of $ f $ for any $ j \in \left[ 1 : n \right]  $ is give
 and the gradient can be written as:
 \begin{align}
 \label{eq:gradf} 
-\nabla f(\theta) = e^T\left( W \circ \sin( T(\theta )  \right) 
+\nabla f(\theta) = e^T\left( W \circ \sin( T(\theta ) ) \right) 
 \end{align} 
-Here the notation $ \circ $ stands for the Hadamard product, i.e. the entrywise product of $ W $ and $ \sin( T (\theta )  $ 
+Here the notation $ \circ $ stands for the Hadamard product, i.e. the entrywise product of $ W $ and $ \sin( T (\theta ) ) $ 
 \end{lem} 
 \begin{proof}
 We fix $ j \in \left[ 1:n \right] $ as the index of the variable for which we compute the partial derivative. To avoid ambiguity we rename the indices of $ f $ yielding:
@@ -727,6 +731,7 @@ This can be seen by setting $ x_1 = 1 $ and
 \end{cases}
 \quad \text{for } i \in \left[ 2:n \right] 
 \end{align*} 
+The notation $ 2 \pi \mathbb{Z}  $ indicates the integer multiples of $ 2 \pi  $.
 This construction is correct, as for any $ i,j \in \left[ 1:n \right]  $ we have  $ k _{
 ij }  $ is even if and only if $ k _{ i1 }  $ and $ k _{ j1 } $ are both even or both odd if and only if $ \overline{ x } _i \overline{ x } _j = 1 $.
 The first equivalence holds by
@@ -761,7 +766,7 @@ In the same manner we can set
 \end{align*} 
 \end{prop} 
 \begin{proof}
-It is clear that assignment \ref{eq:ass1to1} defines a one-to-one correspondence between binary cuts and angular representations in $ \left\{ 0, \pi  \right\} ^{ n }  $.
+It is clear that assignment (\ref{eq:ass1to1}) defines a one-to-one correspondence between binary cuts and angular representations in $ \left\{ 0, \pi  \right\} ^{ n }  $.
 On the other hand every angular representation of a cut has a representative, where every variable is either $ 0 $ or $ \pi $.
 Let $ \overline{ \theta}   $ be an angular representation of a cut. 
 By the second property of $ f $, we can assume $ \overline{ \theta}_i  \in \left[ 0, 2 \pi \right)  $ for all $ i \in \left[ 1:n \right]  $.
@@ -783,7 +788,7 @@ holds.
 As $ \overline{ \theta }  $ is an angular representation of a cut there exists a $ k \in \mathbb{Z} $ such that 
 $ \overline{ \theta } _{ i } - \overline{ \theta } _{ j } = k \pi   $. By rearranging the terms there exists a $ \widetilde{ k } \in \mathbb{Z} $ such that  
 $ \overline{ \theta } _{ j } = \overline{ \theta } _{ i } - k \pi = \widetilde{ k } \pi + \tau $.
-This shows equation \ref{eq:thetajtau}. 
+This shows equation (\ref{eq:thetajtau}). 
 This shows $ \left( \overline{ \theta } - \tau e  \right) _{ i } \in \left\{ 0, \pi  \right\}  $ for all $ i \in \left[ 1:n \right]  $.
 \end{proof}
 Using this correspondence we can represent a cut by both $ \overline{ \theta }  $ and $ \overline{ x }  $. Given a binary representation of a cut $ \overline{ x }  $ (or an
@@ -796,7 +801,7 @@ Every angular representation of a cut $ \overline{ \theta } \in \mathbb{R} ^{ n 
 \end{prop} 
 \begin{proof}
 As $ \overline{ \theta } $ is a cut we have $ \overline{ \theta } _{ i } - \overline{ \theta } _{ j } \in \mathbb{Z} \pi  $ for all $ i,j \in \left[ 1:n \right]  $. 
-This directly implies that every entry of $ \sin( T ( \overline{ \theta } ) )  $ is zero. Plugging this into \ref{eq:gradf} yields $ \nabla f ( \overline{ \theta } ) = 0$.
+This directly implies that every entry of $ \sin( T ( \overline{ \theta } ) )  $ is zero. Plugging this into (\ref{eq:gradf}) yields $ \nabla f ( \overline{ \theta } ) = 0$.
 This shows that $ \overline{ \theta }  $ is a stationary point.
 \end{proof}
 \begin{Def}[Nonnegatively summable matrix]
@@ -896,7 +901,7 @@ we get the identity
 \begin{align*}
 x - \overline{ x } = -2 \delta \circ \overline{ x } 
 \end{align*} 
-With this we continue computation \ref{eq:nonnegsum1}:
+With this we continue computation (\ref{eq:nonnegsum1}):
 \begin{align*}
 0 
 &\leq \overline{ x } ^T W \left( x- \overline{ x }  \right) + \frac{ 1 }{ 2 } \left( x - \overline{ x }  \right) ^T W \left( x - \overline{ x }  \right) \\
@@ -962,14 +967,14 @@ This shows that $ \left( W \circ \overline{ x } \overline{ x } ^T  \right)  $ is
 matrix.
 \end{enumerate}
 \end{rem} 
-Comparing the Hessian of $ f $ as given in \ref{def:Hessian} to \ref{def:M(x)}, we see that the two look similar. 
-The difference is that $ \cos( T(\theta) )  $ in \ref{def:Hessian} is replaced by $ x  x  ^T  $ in \ref{def:M(x)}. Comparing the entries we see that $
+Comparing the Hessian of $ f $ as given in (\ref{def:Hessian}) to (\ref{def:M(x)}), we see that the two look similar. 
+The difference is that $ \cos( T(\theta) )  $ in (\ref{def:Hessian}) is replaced by $ x  x  ^T  $ in (\ref{def:M(x)}). Comparing the entries we see that $
 \cos( \theta_i - \theta_j ) = x_i x_j  $ for all $ i,j \in \left[ 1:n \right]  $ is a sufficient condition for $ H(\theta) = M(x) $.
 This observation leads to the next Theorem providing a classification of angular representations of cuts as stationary points of the function 
 $ f $.
 \begin{thm}
 \label{thm:classificationcuts} 
-Let $ \overline{ \theta }  $ be a angular representation of a cut, or simply a cut, and let $ \overline{ x } \equiv x( \overline{ \theta } ) $ be the associated binary cut. If $ \overline{ \theta }  $ is a local minimum
+Let $ \overline{ \theta }  $ be an angular representation of a cut, or simply a cut, and let $ \overline{ x } \equiv x( \overline{ \theta } ) $ be the associated binary cut. If $ \overline{ \theta }  $ is a local minimum
 (respectively, local maximum) of $ f (\theta) $, then $ \overline{ x }  $ is a maximum (respectively, minimum) cut. 
 Consequently, if $ \overline{ x }  $ is neither a maximum cut nor a minimum cut, then $ \overline{ \theta }  $ must be a saddle point of $ f $.
 \end{thm} 
@@ -1011,7 +1016,7 @@ W \circ \overline{ x } \overline{ x } ^T = \begin{pmatrix}
 1
 \end{pmatrix} 
 \end{align*} 
-Using \ref{def:M(x)} we get
+Using (\ref{def:M(x)}) we get
 \begin{align*}
 M( \overline{ x } ) = 
 \begin{pmatrix}
@@ -1077,7 +1082,7 @@ A detailed proof showing that we can decide whether a symmetric matrix (- $ M ( 
 
 Theorem \ref{thm:classificationcuts} directly implies the following Corollary, which plays an important role for the heuristic we will develop in the next section.
 \begin{cor}
-Let $ x \in \left\{ 0,1 \right\} ^{ n } $ be a nonmaximum cut. Then $ \theta ( x )  $ can not be a local minimum.
+Let $ x \in \left\{ 0,1 \right\} ^{ n } $ be a nonmaximum cut. Then $ \theta ( x )  $ cannot be a local minimum.
 \end{cor} 
 \begin{proof}
 %Assume $ \theta ( x) $ is a local minimum of $ f $. Then $ x $ is maximum cut, by \ref{thm:classificationcuts}. 
@@ -1117,7 +1122,7 @@ The weight of the obtained cut is given by
 Let $ \theta \in \left[ 0, 2 \pi  \right) ^{ n }  $ and $ \alpha \in \left[ 0,\pi \right)  $.
 Let $  x ^{ \alpha }  $ denote the cut generated by $ \alpha $ and $  x ^{ \alpha + \pi  }  $ the cut generated by $ \alpha + \pi $.
 We then have $ x  ^{ \alpha + \pi } = - x  ^{ \alpha }  $. 
-For $ \alpha + \pi  $ assignment \ref{eq:assigncut} is to be understood as:
+For $ \alpha + \pi  $ assignment (\ref{eq:assigncut}) is to be understood as:
 \begin{align*}
 x_i = \begin{cases}
 1 & \text{if } \theta_i \in \left[ 0, \alpha \right) \cup \left[ \alpha + \pi , 2 \pi  \right) \\
@@ -1127,7 +1132,7 @@ x_i = \begin{cases}
 By observing $ \left[ 0 , 2 \pi  \right) = \left[ \alpha, \alpha + \pi  \right) \cupdot \left(  \left[ 0, \alpha
 \right) \cup \left[ \alpha + \pi , 2 \pi  \right)  \right) $ we deduce $ - x ^{ \alpha } = x ^{ \alpha + \pi  }  $.
 As $ x ^{ \alpha }  $ and $ x ^{ \alpha + \pi } $ are of the same weight, it suffices to consider $ \alpha \in \left[ 0, \pi  \right) $ instead of $ \alpha \in \left[ 0 , 2 \pi  \right) $.
-\item The cut generated by assignment \ref{eq:assigncut} can also be generated by a Goemans-Williamson cut. This is achieved by slightly turning the diving line in the
+\item The cut generated by assignment (\ref{eq:assigncut}) can also be generated by a Goemans-Williamson cut. This is achieved by slightly turning the diving line in the
 mathematically negative sense. Slightly means more than zero but strictly less than the smallest angle between two distinct points. As we are given a finite amount of points
 we know that such a turn exists.
 \item 
@@ -1136,7 +1141,7 @@ different sides of the cut.
 \end{enumerate}
 \end{rem} 
 
-By increasing $ \alpha $ we have a simple way to examine all cuts obtained by assignment \ref{eq:assigncut}, called Goemans-Williamson-type cuts.
+By increasing $ \alpha $ we have a simple way to examine all cuts obtained by assignment (\ref{eq:assigncut}), called Goemans-Williamson-type cuts.
 As we will describe in algorithm \ref{alg:ProcedureCUT} we have a deterministic and computationally inexpensive way of finding a best possible Goemans-Williamson-type cut.
 The algorithm works by rotating the separating line in the mathematically positive sense, starting with angle 0.
 In the update step the angle is set to the angle of the line that first intersects a new point on the circle, while rotating.
@@ -1171,7 +1176,7 @@ Furthermore we assume $ \theta_1 \leq \theta_2 \leq \dots \leq \theta_n  $.
 \State Let $ \alpha =0, \Gamma = -\infty , i =1 $. Let $ j $ be the smallest index such that $ \theta_j > \pi $ if there is one; otherwise set $ j = n+1 $. Set $ \theta _{ n+1
 } = 2\pi $.
 \While{ $ \alpha < \pi $}
-\State Generate cut $ x $ by \ref{eq:assigncut} and compute $ \gamma (x) $
+\State Generate cut $ x $ by (\ref{eq:assigncut}) and compute $ \gamma (x) $
 \label{gencut} 
 \State If $ \gamma (x) > \Gamma $, then let $ \Gamma = \gamma (x) $ and $ x^* = x $.
 \If{ $ \theta_i \leq \theta_j - \pi  $ }
@@ -1288,7 +1293,7 @@ cuts.
 Hence we can analyse the performance of our algorithm in a similar manner as in subsection \ref{sec:GoemansWilliamson}.
 \begin{lem}
 Let $ \theta \in \left[ 0 , 2 \pi  \right) ^{ n }  $ such that $ \theta_1 \leq \theta_2 \leq \dots \leq \theta_n    $. Then the cut value generated by algorithm \ref{alg:ProcedureCUT} is at least 0.878 times the relaxed cut value $ \psi (\theta) $ as defined in
-\ref{eq:psiRelaxedCut}. 
+(\ref{eq:psiRelaxedCut}). 
 Written in a formula:
 \begin{align}
 \label{eq:perfguarantee} 
@@ -1319,7 +1324,7 @@ x_i =
 \end{align*} 
 Now fix any angle $ \beta $ and distinguish the following cases. \\
 \textbf{Case}  $ \theta_i = \theta_j $: 
-Then the points can not be separated neither for Goemans-Williamson-type cuts nor for Goemans-Williamson cuts. \\
+Then the points cannot be separated neither for Goemans-Williamson-type cuts nor for Goemans-Williamson cuts. \\
 \textbf{Case}  $ \theta_i \neq \theta_j  $ and neither $ \theta_i = \beta + \frac{ \pi  }{ 2 }  $ nor $ \theta_i = \beta + \frac{ \pi  }{ 2 }  $:
 Then both the Goemans-Williamson-type cut and the Goemans-Williamson cut assign the points are assigned to the same value. \\
 \textbf{Case}  $ \theta_i \neq \theta_j  $ and $ \theta_i = \beta + \frac{ \pi  }{ 2 }  $:
@@ -1334,10 +1339,10 @@ Since algorithm \ref{alg:ProcedureCUT} finds all Goemans-Williamson-type cuts an
 %If $ v_i $ and $ v_j $ are diametrically opposed they are by construction always seperated, therefore the probability is 1. This matches the probability assigned in Lemma
 %\ref{lem:angle}.
 %If $ v_i $ and $ v_j $ are not diametrically opposed the assignement of 
-%As $ \theta $ is not necessarily a optimum solution to \BQP \ref{def:relaxedbqp} we have to bound with $ \psi ( \theta) $ instead of the optimal value.
+%As $ \theta $ is not necessarily a optimum solution to \BQP (\ref{def:relaxedbqp}) we have to bound with $ \psi ( \theta) $ instead of the optimal value.
 
 %\textcolor{red}{Let us quickly go over the changes: \\
-%As $ f $ is nonconvex, we can not expect to find the global minimum, only a local minimum.
+%As $ f $ is nonconvex, we cannot expect to find the global minimum, only a local minimum.
 %This destroys the performance guarantee of the algorithm.
 %Let us show how to appropriately change this: \\
 %The local minimum of $ f $, say $ \theta \in \mathbb{R} ^{ n } $ represents the points 
@@ -1348,12 +1353,12 @@ Since algorithm \ref{alg:ProcedureCUT} finds all Goemans-Williamson-type cuts an
 %\sin( \theta_i ) 
 %\end{pmatrix} ^{ T }  
 %$ for $ i \in \left[ 1:n \right]  $.
-%As all these points are on the unit circle, $ v_1 , \dots, v_n $ are a feasible solution to \ref{def:relaxedbqp} and their value of the objective function is given by ...
+%As all these points are on the unit circle, $ v_1 , \dots, v_n $ are a feasible solution to (\ref{def:relaxedbqp}) and their value of the objective function is given by ...
 %\todo[inline]{CONTINUE}.
 %}
 \end{proof}
-This is not a performance guarantee, as we can not guarantee that $ \psi ( \theta)  $ is an upper bound on the maximum cut value.
-Recall, that in the Goemans-Williamson algorithm, the guarantee comes from (approximately) solving the \SDP \ref{def:relaxedsdp}.
+This is not a performance guarantee, as we cannot guarantee that $ \psi ( \theta)  $ is an upper bound on the maximum cut value.
+Recall, that in the Goemans-Williamson algorithm, the guarantee comes from (approximately) solving the \SDP (\ref{def:relaxedsdp}).
 The next Lemma can be interpreted as a weak performance guarantee
 \begin{lem}
 Let $ x ^{*} _{ a } $ and $ x ^{*} _{ b } $ be two cuts generated by algorithm \ref{alg:ProcedureCUT} from $ \theta_a $ and $ \theta_b $ respectively.
@@ -1363,7 +1368,7 @@ _{ a }  $.
 \begin{proof}
 Using the assumptions we confirm
 \begin{align*}
-\gamma ( x ^{ * } _{ b } ) \overset{ \ref{eq:perfguarantee}  }{ \geq  } 0.878 \cdot \psi ( \theta_b) > \psi ( \theta_a) \geq \gamma ( x ^{ * } _{ a } ) 
+\gamma ( x ^{ * } _{ b } ) \overset{ (\ref{eq:perfguarantee})  }{ \geq  } 0.878 \cdot \psi ( \theta_b) > \psi ( \theta_a) \geq \gamma ( x ^{ * } _{ a } ) 
 \end{align*} 
 \end{proof}
 The next paragraph, describes the idea of algorithm \ref{alg:improvedCut}.
@@ -1390,7 +1395,7 @@ We can set the termination criterion to be $ N $ consecutive unsuccessful attemp
 \State Given $ \theta^0 \in \mathbb{R} ^{ n }  $ and integer $ N \geq 0  $, let $ k=0 $ and $ \Gamma = - \infty  $
 \While{ $ k \leq N  $}
 \State Starting from $ \theta^0 $, minimise $ f $ to get $ \theta  $
-\State Compute a best cut $ x $ associated with $ \theta $ by \ref{alg:ProcedureCUT} 
+\State Compute a best cut $ x $ associated with $ \theta $ by Algorithm \ref{alg:ProcedureCUT} 
 \If{$ \gamma (x) > \Gamma $}
 \State Let $ \Gamma = \gamma (x), x^* = x $ and $ k=0 $
 \Else
@@ -1434,7 +1439,7 @@ heuristic solution by running algorithm \ref{alg:improvedCut} from different sta
 \end{algorithm}
 
 Generally speaking the bigger $ M $ and $ N $ are the longer the algorithm will run and the better the returned cut will be.
-However as the termination criterion in the procedure \textsc{IMPROVEDCUT} relies on the number of unsuccessful attempts we can not predict the runtime.
+However as the termination criterion in the procedure \textsc{ImprovedCut} relies on the number of unsuccessful attempts we cannot predict the runtime.
 Since there are elements of randomness, namely in the choice of the seed and the random perturbation there can always be exceptions to the rule.
 %We will investigate the performance of the heuristic for a set of different choices for $ M $ and $ N $.
 \newpage
@@ -1458,14 +1463,14 @@ To this end we formulate the \MCP as an integer linear programming problem:
 \addConstraint{   z_e    }{ \in  \mathbb{Z}  }{ \quad \forall e \in E}
 \end{mini}
 
-An optimal solution to \ref{def:mcpILP} gives us the following maximum cut $ \left\{ \left\{ i,j \right\}  \mid z _{ ij } = 1 \right\}  $.
-Any cut of $ G $ is a feasible solution to \ref{def:mcpILP} and vice versa.
+An optimal solution to (\ref{def:mcpILP}) gives us the following maximum cut $ \left\{ \left\{ i,j \right\}  \mid z _{ ij } = 1 \right\}  $.
+Any cut of $ G $ is a feasible solution to (\ref{def:mcpILP}) and vice versa.
 The cut polytope of a graph $ G $ can thus be denoted as 
 \begin{align*}
-P ^{ G } _{ \text{CUT}  } := \left\{ z \in \left[ 0,1 \right] ^{ E }   \mid  z \text{ is a feasible solution to } \ref{def:mcpILP} \right\}.
+P ^{ G } _{ \text{CUT}  } := \left\{ z \in \left[ 0,1 \right] ^{ E }   \mid  z \text{ is a feasible solution to } (\ref{def:mcpILP}) \right\}.
 \end{align*} 
 
-For the \BQP \ref{def:01bqp} consider the following undirected graph $ G = (V,E) $. The vertices $ V = \left\{ v_1, \dots , v_n \right\} $, where $ v_i $ corresponds to the
+For the \BQP (\ref{def:01bqp}) consider the following undirected graph $ G = (V,E) $. The vertices $ V = \left\{ v_1, \dots , v_n \right\} $, where $ v_i $ corresponds to the
 variable $ x_i $ for every $ i \in \left[ 1:n \right]  $ and $ E = \left\{ \left\{ v_i, v_j \right\}  \mid i,j \in \left[ 1:n \right] : q _{ ij } + q _{ ji } \neq 0  \right\}
 $ where each edge $ \left\{ v_i , v_j \right\}  $ corresponds to the product $ y _{ ij } := x_i x_j $.
 We admit that the Boolean quadric polytope is given by 
@@ -1603,7 +1608,7 @@ cuts.
 %However, the instances gka*b with $ ^{ * }  \in \left[ 1:8 \right]  $ the same characteristics hold true but their performance is much better.
 %\todo[inline]{Analyse gka*b instances}
 %Another explanation might be that the 
-%Therefore the previous observations can not be a thorough explanation of the performance.
+%Therefore the previous observations cannot be a thorough explanation of the performance.
 \begin{figure}
 \includegraphics[width=\textwidth]{plots/OverviewPerformanceSolversResized.pdf}
 \caption{An overview of the performance of each solver ran on every instance with known optimal solution.}
@@ -1751,6 +1756,11 @@ shows the returned cut ratio (returned cut weight/optimal cut value) and the bot
 \includegraphics[width=\textwidth]{plots/gka10b.mc.pdf}
 \end{figure} 
 
+%\begin{landscape}
+%\begin{tiny}
+%\input{rawDataValues}
+%\end{tiny}
+%\end{landscape}
 \bibliography{bibliography}
 \bibliographystyle{alpha}
 \listoftodos[Notes]
